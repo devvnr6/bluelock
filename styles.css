@@ -104,6 +104,17 @@ h1, h2, h3, h4, h5, h6 {
     height: 72px;
 }
 
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-logo .logo-image {
+    height: 40px;
+    width: auto;
+}
+
 .nav-logo .logo-text {
     font-size: 24px;
     font-weight: 700;
