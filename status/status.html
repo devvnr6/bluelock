@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Status - BlueLock</title>
+    <link rel="icon" type="image/png" href="bluelocklogo.png" />
+    <link rel="stylesheet" href="status.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <img src="bluelocklogo.png" alt="BlueLock" class="logo-image" />
+          <span class="logo-text">BlueLock</span>
+        </div>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="#" class="active">Status</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Status Header -->
+    <section class="status-header">
+      <div class="container">
+        <h1 class="status-title">System Status</h1>
+        <p class="status-subtitle">Real-time monitoring of all BlueLock services</p>
+        <div class="overall-status outage">
+          <div class="status-indicator"></div>
+          <span class="status-text">All Systems Offline</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Status -->
+    <section class="services-status">
+      <div class="container">
+        <div class="services-grid">
+          <!-- Valorant Service -->
+          <div class="service-card">
+            <div class="service-header">
+              <div class="service-info">
+                <h3 class="service-name">Valorant Cheat</h3>
+                <p class="service-description">Aimbot, ESP, Recoil Control</p>
+              </div>
+              <div class="service-status outage">
+                <div class="status-dot"></div>
+                <span>Offline</span>
+              </div>
+            </div>
+            <div class="service-metrics">
+              <div class="metric">
+                <span class="metric-label">Uptime</span>
+                <span class="metric-value">0.00%</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Response Time</span>
+                <span class="metric-value">--</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CS2 Service -->
+          <div class="service-card">
+            <div class="service-header">
+              <div class="service-info">
+                <h3 class="service-name">CS2 Cheat</h3>
+                <p class="service-description">Advanced Aimbot, Wallhack</p>
+              </div>
+              <div class="service-status outage">
+                <div class="status-dot"></div>
+                <span>Offline</span>
+              </div>
+            </div>
+            <div class="service-metrics">
+              <div class="metric">
+                <span class="metric-label">Uptime</span>
+                <span class="metric-value">0.00%</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Response Time</span>
+                <span class="metric-value">--</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Apex Legends Service -->
+          <div class="service-card">
+            <div class="service-header">
+              <div class="service-info">
+                <h3 class="service-name">Apex Legends Cheat</h3>
+                <p class="service-description">Aim Assist, ESP, No Recoil</p>
+              </div>
+              <div class="service-status outage">
+                <div class="status-dot"></div>
+                <span>Offline</span>
+              </div>
+            </div>
+            <div class="service-metrics">
+              <div class="metric">
+                <span class="metric-label">Uptime</span>
+                <span class="metric-value">0.00%</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Response Time</span>
+                <span class="metric-value">--</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Call of Duty Service -->
+          <div class="service-card">
+            <div class="service-header">
+              <div class="service-info">
+                <h3 class="service-name">Call of Duty Cheat</h3>
+                <p class="service-description">Aimbot, Radar, ESP</p>
+              </div>
+              <div class="service-status outage">
+                <div class="status-dot"></div>
+                <span>Offline</span>
+              </div>
+            </div>
+            <div class="service-metrics">
+              <div class="metric">
+                <span class="metric-label">Uptime</span>
+                <span class="metric-value">0.00%</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Response Time</span>
+                <span class="metric-value">--</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Authentication Service -->
+          <div class="service-card">
+            <div class="service-header">
+              <div class="service-info">
+                <h3 class="service-name">Authentication</h3>
+                <p class="service-description">Login & License Verification</p>
+              </div>
+              <div class="service-status outage">
+                <div class="status-dot"></div>
+                <span>Offline</span>
+              </div>
+            </div>
+            <div class="service-metrics">
+              <div class="metric">
+                <span class="metric-label">Uptime</span>
+                <span class="metric-value">0.00%</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Response Time</span>
+                <span class="metric-value">--</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Update Service -->
+          <div class="service-card">
+            <div class="service-header">
+              <div class="service-info">
+                <h3 class="service-name">Update Service</h3>
+                <p class="service-description">Automatic Updates & Patches</p>
+              </div>
+              <div class="service-status outage">
+                <div class="status-dot"></div>
+                <span>Offline</span>
+              </div>
+            </div>
+            <div class="service-metrics">
+              <div class="metric">
+                <span class="metric-label">Uptime</span>
+                <span class="metric-value">0.00%</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Response Time</span>
+                <span class="metric-value">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Uptime Statistics -->
+    <section class="uptime-stats">
+      <div class="container">
+        <h2 class="section-title">30-Day Uptime History</h2>
+        <div class="uptime-chart">
+          <div class="chart-container">
+            <div class="chart-bars">
+              <!-- Generate 30 bars for 30 days -->
+              <div class="bar outage" style="height: 0%;" title="Day 1: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 2: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 3: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 4: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 5: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 6: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 7: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 8: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 9: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 10: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 11: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 12: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 13: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 14: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 15: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 16: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 17: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 18: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 19: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 20: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 21: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 22: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 23: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 24: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 25: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 26: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 27: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 28: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 29: 0% uptime - Complete Outage"></div>
+              <div class="bar outage" style="height: 0%;" title="Day 30: 0% uptime - Complete Outage"></div>
+            </div>
+            <div class="chart-labels">
+              <span>30 days ago</span>
+              <span>Today</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Incidents -->
+    <section class="recent-incidents">
+      <div class="container">
+        <h2 class="section-title">Recent Incidents</h2>
+        <div class="incidents-list">
+          <div class="incident-card ongoing">
+            <div class="incident-header">
+              <div class="incident-info">
+                <h3 class="incident-title">BlueLock's - First Publish</h3>
+                <p class="incident-time">August 25, 2025 - 01:00 AM UTC</p>
+              </div>
+              <div class="incident-status">Working on it</div>
+            </div>
+            <p class="incident-description">
+                        We are freshly working on everything new. Updates will be posted here as progress is made.
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <img src="bluelocklogo.png" alt="BlueLock" class="footer-logo" />
+            <span class="logo-text">BlueLock</span>
+          </div>
+          <div class="footer-links">
+            <a href="index.html">Back to Home</a>
+            <a href="#support">Support</a>
+            <a href="#contact">Contact</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p class="copyright">© 2025 BlueLock. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="status.js"></script>
+  </body>
+</html>
