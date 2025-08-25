@@ -535,6 +535,16 @@ body {
     padding: 2rem;
     margin: 1rem;
   }
+
+  .checkbox-container {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .checkbox-container .auth-link {
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 480px) {
@@ -549,6 +559,17 @@ body {
 
   .nav-links {
     display: none;
+  }
+
+  .checkbox-container {
+    font-size: 0.8rem;
+    line-height: 1.3;
+    white-space: normal;
+  }
+
+  .checkbox-container .auth-link {
+    display: inline;
+    white-space: nowrap;
   }
 }
 
