@@ -325,7 +325,15 @@ successModal.addEventListener('click', (e) => {
 document.querySelectorAll('.btn-social').forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.preventDefault();
-    const provider = btn.classList.contains('discord-btn') ? 'Discord' : 'Google';
+    let provider;
+    
+    if (btn.classList.contains('discord-btn')) {
+      provider = 'Discord';
+    } else if (btn.classList.contains('google-btn')) {
+      provider = 'Google';
+    } else if (btn.classList.contains('apple-btn')) {
+      provider = 'Apple';
+    }
     
     setLoadingState(btn, true);
     
