@@ -402,6 +402,16 @@ body {
   border-color: #dadce0;
 }
 
+.apple-btn {
+  color: #000;
+}
+
+.apple-btn:hover {
+  background: #000;
+  color: white;
+  border-color: #000;
+}
+
 /* Auth Divider */
 .auth-divider {
   position: relative;
