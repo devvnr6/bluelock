@@ -641,40 +641,64 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Pricing */
 .pricing {
-    padding: 120px 0;
+    padding: 80px 0;
     background: linear-gradient(135deg, #f8faff 0%, #ffffff 50%, #f0f4ff 100%);
 }
 
 .pricing-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     max-width: 1000px;
     margin: 0 auto;
 }
 
+.top-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.bottom-row {
+    display: flex;
+    justify-content: center;
+}
+
+.bottom-row .pricing-card.lifetime {
+    max-width: 350px;
+    width: 100%;
+    background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%);
+    border: 2px solid #007aff;
+    box-shadow: 0 8px 32px rgba(0, 122, 255, 0.12);
+}
+
+.bottom-row .pricing-card.lifetime:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0, 122, 255, 0.16);
+}
+
 .pricing-card {
     background: white;
-    border-radius: 20px;
-    padding: 32px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
     position: relative;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .pricing-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
 }
 
 .pricing-card.featured {
     border: 2px solid #007aff;
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 .pricing-card.featured:hover {
-    transform: scale(1.05) translateY(-8px);
+    transform: scale(1.02) translateY(-4px);
 }
 
 .card-badge {
@@ -692,47 +716,47 @@ h1, h2, h3, h4, h5, h6 {
 
 .card-header {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 .plan-name {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .plan-description {
     color: #515154;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .card-price {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
 }
 
 .price {
-    font-size: 48px;
+    font-size: 36px;
     font-weight: 700;
     color: #1d1d1f;
 }
 
 .period {
-    font-size: 16px;
+    font-size: 14px;
     color: #515154;
     margin-left: 4px;
 }
 
 .savings {
     display: block;
-    font-size: 14px;
+    font-size: 12px;
     color: #007aff;
     font-weight: 600;
     margin-top: 4px;
 }
 
 .card-features {
-    margin-bottom: 32px;
+    margin-bottom: 20px;
 }
 
 .features-list {
@@ -740,9 +764,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .features-list li {
-    padding: 8px 0;
+    padding: 4px 0;
     position: relative;
-    padding-left: 24px;
+    padding-left: 20px;
+    font-size: 14px;
 }
 
 .features-list li::before {
@@ -751,6 +776,7 @@ h1, h2, h3, h4, h5, h6 {
     left: 0;
     color: #007aff;
     font-weight: 600;
+    font-size: 12px;
 }
 
 /* Footer */
@@ -915,8 +941,18 @@ h1, h2, h3, h4, h5, h6 {
         grid-template-columns: 1fr;
     }
     
-    .pricing-grid {
+    .top-row {
         grid-template-columns: 1fr;
+    }
+    
+    .bottom-row .pricing-card.lifetime {
+        max-width: none;
+    }
+
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
     }
     
     .footer-content {
@@ -941,7 +977,7 @@ h1, h2, h3, h4, h5, h6 {
     .testimonial-quote {
         font-size: 18px;
     }
-}
+
 
 @media (max-width: 480px) {
     .section-header {
@@ -949,10 +985,10 @@ h1, h2, h3, h4, h5, h6 {
     }
     
     .pricing-card {
-        padding: 24px;
+        padding: 16px;
     }
     
     .card-price .price {
-        font-size: 36px;
+        font-size: 28px;
     }
 }
