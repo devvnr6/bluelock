@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cheat Menu - BlueLock</title>
+    <link rel="icon" type="image/png" href="../bluelocklogo.png" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="cheat.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <img src="../bluelocklogo.png" alt="BlueLock" class="logo-image" />
+          <span class="logo-text">BlueLock</span>
+        </div>
+        <div class="nav-links">
+          <a href="../#support">Support</a>
+          <a href="../status/">Status</a>
+        </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Advanced Status Panel -->
+    <div class="advanced-status-panel" id="statusPanel">
+      <div class="status-header">
+        <div class="status-indicator-advanced">
+          <div class="status-dot-advanced" id="statusDot"></div>
+          <span class="status-text-advanced" id="statusText">Initializing...</span>
+        </div>
+        <button class="panel-toggle" id="panelToggle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </button>
+      </div>
+      <div class="status-content">
+        <div class="status-stats">
+          <div class="stat-item">
+            <span class="stat-label">Active Cheats</span>
+            <span class="stat-value" id="activeCheats">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Injection Status</span>
+            <span class="stat-value injection-status" id="injectionStatus">Not Injected</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Game Process</span>
+            <span class="stat-value" id="gameProcess">Not Found</span>
+          </div>
+        </div>
+        <div class="process-controls">
+          <button class="btn-process inject-btn" id="injectBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Inject
+          </button>
+          <button class="btn-process eject-btn" id="ejectBtn" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Eject
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Section for Cheat Menu -->
+    <section class="cheat-hero">
+      <div class="container">
+        <div class="cheat-hero-content">
+          <h1 class="cheat-hero-title">Professional Enhancement Suite</h1>
+          <p class="cheat-hero-subtitle">
+            Precision-engineered tools designed for seamless integration and unrivaled performance.
+            Configure your competitive advantage with enterprise-grade controls.
+          </p>
+          <div class="cheat-hero-stats">
+            <div class="hero-stat">
+              <span class="hero-stat-value" id="totalFeatures">25</span>
+              <span class="hero-stat-label">Available Features</span>
+            </div>
+            <div class="hero-stat">
+              <span class="hero-stat-value" id="activeFeatures">0</span>
+              <span class="hero-stat-label">Active Features</span>
+            </div>
+            <div class="hero-stat">
+              <span class="hero-stat-value">100%</span>
+              <span class="hero-stat-label">Undetected</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Cheat Interface -->
+    <section class="cheat-interface">
+      <div class="container">
+        <!-- Control Panel Header -->
+        <div class="control-panel-header">
+          <div class="panel-title-section">
+            <h2 class="panel-title">Control Center</h2>
+            <p class="panel-subtitle">Configure your competitive advantage</p>
+          </div>
+          <div class="panel-controls">
+            <div class="search-container">
+              <input type="text" id="cheatSearch" class="search-input" placeholder="Search features...">
+              <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="preset-selector">
+              <select id="presetSelect" class="preset-select">
+                <option value="">Select Configuration</option>
+                <option value="legit">Legit Mode</option>
+                <option value="rage">Rage Mode</option>
+                <option value="hvh">HvH Mode</option>
+                <option value="custom">Custom Setup</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature Categories -->
+        <div class="feature-categories">
+          <!-- Visual Enhancement Suite -->
+          <div class="feature-category" data-category="visual">
+            <div class="category-header">
+              <div class="category-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/>
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="category-info">
+                <h3 class="category-title">Visual Enhancement Suite</h3>
+                <p class="category-description">Advanced perception tools for tactical advantage</p>
+              </div>
+              <div class="category-controls">
+                <button class="category-toggle-all" data-category="visual">Enable All</button>
+              </div>
+            </div>
+            
+            <div class="features-grid">
+              <div class="feature-card premium" data-search="esp wallhack see through walls extrasensory">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">
+                      Ghost ESP
+                      <span class="feature-badge premium">PREMIUM</span>
+                    </h4>
+                    <p class="feature-description">Advanced extrasensory perception with intelligent filtering</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="esp">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="feature-options" style="display: none;">
+                  <div class="option-group">
+                    <div class="option-item">
+                      <label class="option-label">Detection Range</label>
+                      <div class="option-input">
+                        <input type="range" class="option-slider" min="50" max="1000" value="500" data-option="esp-distance">
+                        <span class="option-value">500m</span>
+                      </div>
+                    </div>
+                    <div class="option-item">
+                      <label class="option-label">Visibility Mode</label>
+                      <select class="option-select" data-option="esp-type">
+                        <option value="outline">Outline</option>
+                        <option value="box">Bounding Box</option>
+                        <option value="glow">Glow Effect</option>
+                        <option value="minimal">Minimal</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="player names tags labels identification">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Player Intelligence</h4>
+                    <p class="feature-description">Comprehensive player identification and statistics</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="names">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="health hp bars vitals">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Vitals Monitor</h4>
+                    <p class="feature-description">Real-time health and armor visualization</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="health">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card new" data-search="radar minimap tactical overview">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">
+                      Tactical Radar
+                      <span class="feature-badge new">NEW</span>
+                    </h4>
+                    <p class="feature-description">2D radar overlay with enemy positioning</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="radar">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="distance meter range measurement">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Distance Tracker</h4>
+                    <p class="feature-description">Precise distance measurements to targets and objectives</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="distance">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card new" data-search="bone esp skeleton xray">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">
+                      Bone ESP
+                      <span class="feature-badge new">NEW</span>
+                    </h4>
+                    <p class="feature-description">Advanced skeletal tracking and bone visualization</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="boneesp">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="item esp loot weapon pickup">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Item Locator</h4>
+                    <p class="feature-description">Highlight valuable items, weapons, and loot</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="itemesp">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card premium" data-search="chams wallhack colored models">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">
+                      Advanced Chams
+                      <span class="feature-badge premium">PREMIUM</span>
+                    </h4>
+                    <p class="feature-description">Colored player models visible through walls</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="chams">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Combat Enhancement Suite -->
+          <div class="feature-category" data-category="combat">
+            <div class="category-header">
+              <div class="category-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="2"/>
+                  <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="category-info">
+                <h3 class="category-title">Combat Enhancement Suite</h3>
+                <p class="category-description">Precision targeting and weapon control systems</p>
+              </div>
+              <div class="category-controls">
+                <button class="category-toggle-all" data-category="combat">Enable All</button>
+              </div>
+            </div>
+            
+            <div class="features-grid">
+              <div class="feature-card premium" data-search="aimbot aim assist targeting">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">
+                      Precision Aimbot
+                      <span class="feature-badge premium">PREMIUM</span>
+                    </h4>
+                    <p class="feature-description">Intelligent targeting system with human-like movements</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="aimbot">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="feature-options" style="display: none;">
+                  <div class="option-group">
+                    <div class="option-item">
+                      <label class="option-label">Field of View</label>
+                      <div class="option-input">
+                        <input type="range" class="option-slider" min="5" max="180" value="90" data-option="aim-fov">
+                        <span class="option-value">90°</span>
+                      </div>
+                    </div>
+                    <div class="option-item">
+                      <label class="option-label">Smoothness</label>
+                      <div class="option-input">
+                        <input type="range" class="option-slider" min="1" max="100" value="50" data-option="aim-smooth">
+                        <span class="option-value">50%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="triggerbot auto fire shooting">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Smart Trigger</h4>
+                    <p class="feature-description">Intelligent auto-fire with target validation</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="triggerbot">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="recoil control spray pattern compensation">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Recoil Master</h4>
+                    <p class="feature-description">Advanced pattern recognition and compensation</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="norecoil">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="rapid fire rate increase speed">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Rapid Fire</h4>
+                    <p class="feature-description">Increased weapon fire rate and burst capability</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="rapidfire">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card premium" data-search="silent aim invisible targeting">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">
+                      Silent Aim
+                      <span class="feature-badge premium">PREMIUM</span>
+                    </h4>
+                    <p class="feature-description">Invisible targeting without crosshair movement</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="silentaim">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="penetration wallbang through walls">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Wall Penetration</h4>
+                    <p class="feature-description">Enhanced bullet penetration through surfaces</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="wallbang">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="auto reload ammunition clip">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Auto Reload</h4>
+                    <p class="feature-description">Automatic weapon reloading and ammunition management</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="autoreload">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Movement Enhancement Suite -->
+          <div class="feature-category" data-category="movement">
+            <div class="category-header">
+              <div class="category-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="category-info">
+                <h3 class="category-title">Movement Enhancement Suite</h3>
+                <p class="category-description">Advanced mobility and positioning controls</p>
+              </div>
+              <div class="category-controls">
+                <button class="category-toggle-all" data-category="movement">Enable All</button>
+              </div>
+            </div>
+            
+            <div class="features-grid">
+              <div class="feature-card" data-search="speed hack velocity boost">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Velocity Boost</h4>
+                    <p class="feature-description">Enhanced movement speed with natural acceleration</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="speed">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="fly mode noclip flight">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Flight Mode</h4>
+                    <p class="feature-description">Unrestricted three-dimensional movement</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="fly">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="bunny hop bhop auto jump">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Auto Bunny Hop</h4>
+                    <p class="feature-description">Perfect bunny hopping with optimal timing</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="bhop">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="infinite jump air jump double">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Infinite Jump</h4>
+                    <p class="feature-description">Jump indefinitely without ground contact</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="infinitejump">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="no fall damage protection immune">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Fall Protection</h4>
+                    <p class="feature-description">Immunity to fall damage from any height</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="nofalldamage">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card new" data-search="teleport instant movement position">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">
+                      Teleport
+                      <span class="feature-badge new">NEW</span>
+                    </h4>
+                    <p class="feature-description">Instant teleportation to cursor position</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="teleport">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Utility Enhancement Suite -->
+          <div class="feature-category" data-category="utility">
+            <div class="category-header">
+              <div class="category-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                  <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="category-info">
+                <h3 class="category-title">Utility Enhancement Suite</h3>
+                <p class="category-description">Quality of life improvements and automation tools</p>
+              </div>
+              <div class="category-controls">
+                <button class="category-toggle-all" data-category="utility">Enable All</button>
+              </div>
+            </div>
+            
+            <div class="features-grid">
+              <div class="feature-card" data-search="crosshair custom reticle center">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Custom Crosshair</h4>
+                    <p class="feature-description">Personalized crosshair with advanced customization</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="crosshair">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="fov field of view zoom camera">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">FOV Changer</h4>
+                    <p class="feature-description">Adjustable field of view for better visibility</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="fovchanger">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card premium" data-search="spectator list viewer watch">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">
+                      Spectator List
+                      <span class="feature-badge premium">PREMIUM</span>
+                    </h4>
+                    <p class="feature-description">Monitor who is spectating your gameplay</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="spectatorlist">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="auto accept queue match ready">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Auto Accept</h4>
+                    <p class="feature-description">Automatically accept match invitations and queues</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="autoaccept">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card" data-search="rank revealer skill rating hidden">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">Rank Revealer</h4>
+                    <p class="feature-description">Display hidden ranks and skill ratings</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="rankrevealer">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card new" data-search="inventory viewer items skins weapons">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">
+                      Inventory Viewer
+                      <span class="feature-badge new">NEW</span>
+                    </h4>
+                    <p class="feature-description">View other players' inventories and skins</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="inventoryviewer">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exploit Suite -->
+          <div class="feature-category" data-category="exploits">
+            <div class="category-header">
+              <div class="category-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+              </div>
+              <div class="category-info">
+                <h3 class="category-title">Advanced Exploit Suite</h3>
+                <p class="category-description">High-risk, high-reward game modifications</p>
+              </div>
+              <div class="category-controls">
+                <button class="category-toggle-all" data-category="exploits">Enable All</button>
+              </div>
+            </div>
+            
+            <div class="features-grid">
+              <div class="feature-card premium" data-search="god mode invincible immortal damage">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">
+                      God Mode
+                      <span class="feature-badge premium">PREMIUM</span>
+                    </h4>
+                    <p class="feature-description">Complete invincibility and damage immunity</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="godmode">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card premium" data-search="infinite ammo unlimited bullets">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">
+                      Infinite Ammo
+                      <span class="feature-badge premium">PREMIUM</span>
+                    </h4>
+                    <p class="feature-description">Unlimited ammunition for all weapons</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="infiniteammo">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card premium" data-search="money hack credits currency">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">
+                      Economy Hack
+                      <span class="feature-badge premium">PREMIUM</span>
+                    </h4>
+                    <p class="feature-description">Unlimited in-game currency and credits</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="moneyhack">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="feature-card premium" data-search="unlock all items weapons skins">
+                <div class="feature-header">
+                  <div class="feature-info">
+                    <h4 class="feature-name">
+                      Item Unlocker
+                      <span class="feature-badge premium">PREMIUM</span>
+                    </h4>
+                    <p class="feature-description">Unlock all weapons, skins, and cosmetics</p>
+                  </div>
+                  <label class="feature-toggle">
+                    <input type="checkbox" class="cheat-toggle" data-cheat="itemunlocker">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuration Panel -->
+        <div class="configuration-panel">
+          <div class="config-header">
+            <h3 class="config-title">System Configuration</h3>
+            <p class="config-subtitle">Fine-tune performance and security settings</p>
+          </div>
+          
+          <div class="config-sections">
+            <div class="config-section">
+              <h4 class="config-section-title">Performance Settings</h4>
+              <div class="config-options">
+                <div class="config-option">
+                  <label for="updateRate" class="config-label">Update Rate</label>
+                  <div class="config-input">
+                    <input type="range" id="updateRate" class="config-slider" min="60" max="240" value="120">
+                    <span class="config-value">120 Hz</span>
+                  </div>
+                </div>
+                <div class="config-option">
+                  <label for="renderDistance" class="config-label">Render Distance</label>
+                  <div class="config-input">
+                    <input type="range" id="renderDistance" class="config-slider" min="100" max="2000" value="1000">
+                    <span class="config-value">1000m</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="config-section">
+              <h4 class="config-section-title">Security Features</h4>
+              <div class="config-options">
+                <div class="config-option-toggle">
+                  <label class="toggle-container">
+                    <input type="checkbox" id="panicMode">
+                    <span class="toggle-checkmark"></span>
+                    <div class="toggle-info">
+                      <span class="toggle-title">Panic Mode</span>
+                      <span class="toggle-desc">Emergency disable all features (F12)</span>
+                    </div>
+                  </label>
+                </div>
+                <div class="config-option-toggle">
+                  <label class="toggle-container">
+                    <input type="checkbox" id="streamProof">
+                    <span class="toggle-checkmark"></span>
+                    <div class="toggle-info">
+                      <span class="toggle-title">Stream Protection</span>
+                      <span class="toggle-desc">Hide interface during streaming/recording</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Center -->
+        <div class="action-center">
+          <div class="action-group primary-actions">
+            <button class="action-btn primary save-config-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Save Configuration
+            </button>
+            <button class="action-btn secondary load-config-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Load Configuration
+            </button>
+          </div>
+          <div class="action-group secondary-actions">
+            <button class="action-btn outline export-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Export
+            </button>
+            <button class="action-btn outline import-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Import
+            </button>
+            <button class="action-btn danger reset-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Reset All
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <span class="logo-text">BlueLock</span>
+            <p class="footer-tagline">Precision Perfected. Victory Defined.</p>
+          </div>
+          <div class="footer-links">
+            <div class="link-group">
+              <h4 class="link-title">Support</h4>
+              <a href="../#help">Help Center</a>
+              <a href="../#contact">Contact</a>
+              <a href="../status/">System Status</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p class="copyright">© 2025 BlueLock. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <script src="cheat.js"></script>
+  </body>
+</html>
