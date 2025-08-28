@@ -312,10 +312,12 @@ class AuthManager {
 
   handleGoogleLogin() {
     this.showNotification('Google OAuth integration coming soon! Please use email or Discord login.', 'info');
+    // No automatic authentication - just show the message
   }
 
   handleAppleLogin() {
     this.showNotification('Apple Sign-In integration coming soon! Please use email or Discord login.', 'info');
+    // No automatic authentication - just show the message
   }
 
   handleOAuthCallback() {
