@@ -1,285 +1,689 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - BlueLock</title>
-    <link rel="icon" type="image/png" href="../bluelocklogo.png" />
-    <link rel="stylesheet" href="auth.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-      <div class="nav-container">
-        <div class="nav-logo">
-          <img src="../bluelocklogo.png" alt="BlueLock" class="logo-image" />
-          <span class="logo-text">BlueLock</span>
+// AuthManager class to handle authentication
+class AuthManager {
+  constructor() {
+    // You need to replace this with a REAL Discord Client ID from https://discord.com/developers/applications
+    this.discordClientId = '1410349295542079693'; // Your actual Discord client ID from the screenshot
+    this.redirectUri = window.location.origin + '/auth/'; // Make sure this matches your Discord OAuth2 settings
+    this.isInitialized = false;
+    this.init();
+  }
+
+  init() {
+    // Wait for DOM to be fully loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.setupComponents());
+    } else {
+      this.setupComponents();
+    }
+  }
+
+  setupComponents() {
+    try {
+      this.setupEventListeners();
+      this.handleOAuthCallback();
+      this.checkExistingAuth();
+      this.isInitialized = true;
+    } catch (error) {
+      console.error('Failed to initialize AuthManager:', error);
+      this.showNotification('Authentication system failed to initialize', 'error');
+    }
+  }
+
+  setupEventListeners() {
+    // Form switching with null checks
+    const showSignupBtn = document.getElementById('showSignup');
+    const showLoginBtn = document.getElementById('showLogin');
+    
+    if (showSignupBtn) {
+      showSignupBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.switchToSignup();
+      });
+    }
+
+    if (showLoginBtn) {
+      showLoginBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.switchToLogin();
+      });
+    }
+
+    // Password toggles
+    this.setupPasswordToggles();
+
+    // Form submissions
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    if (loginForm) {
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleLogin(e.target);
+      });
+    }
+
+    if (signupForm) {
+      signupForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleSignup(e.target);
+      });
+    }
+
+    // Social logins with null checks
+    this.setupSocialLogins();
+
+    // Password strength checker
+    const signupPasswordInput = document.getElementById('signupPassword');
+    if (signupPasswordInput) {
+      signupPasswordInput.addEventListener('input', (e) => {
+        this.checkPasswordStrength(e.target.value);
+      });
+    }
+
+    // Success modal
+    const closeModalBtn = document.getElementById('closeModal');
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener('click', () => {
+        this.closeSuccessModal();
+      });
+    }
+  }
+
+  setupPasswordToggles() {
+    const passwordToggle = document.getElementById('passwordToggle');
+    const signupPasswordToggle = document.getElementById('signupPasswordToggle');
+
+    if (passwordToggle) {
+      passwordToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.togglePassword('password', 'passwordToggle');
+      });
+    }
+
+    if (signupPasswordToggle) {
+      signupPasswordToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.togglePassword('signupPassword', 'signupPasswordToggle');
+      });
+    }
+  }
+
+  setupSocialLogins() {
+    // Discord buttons
+    document.querySelectorAll('.discord-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handleDiscordLogin();
+      });
+    });
+
+    // Google buttons
+    document.querySelectorAll('.google-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handleGoogleLogin();
+      });
+    });
+
+    // Apple buttons
+    document.querySelectorAll('.apple-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handleAppleLogin();
+      });
+    });
+  }
+
+  togglePassword(inputId, toggleId) {
+    const input = document.getElementById(inputId);
+    const toggle = document.getElementById(toggleId);
+    
+    if (!input || !toggle) {
+      console.warn(`Password toggle elements not found: ${inputId}, ${toggleId}`);
+      return;
+    }
+    
+    if (input.type === 'password') {
+      input.type = 'text';
+      toggle.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="currentColor" stroke-width="2"/>
+          <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      `;
+    } else {
+      input.type = 'password';
+      toggle.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+          <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+        </svg>
+      `;
+    }
+  }
+
+  switchToSignup() {
+    const loginCard = document.querySelector('.auth-card:not(.signup-card)');
+    const signupCard = document.getElementById('signupCard');
+    
+    if (loginCard && signupCard) {
+      loginCard.style.display = 'none';
+      signupCard.style.display = 'block';
+    }
+  }
+
+  switchToLogin() {
+    const loginCard = document.querySelector('.auth-card:not(.signup-card)');
+    const signupCard = document.getElementById('signupCard');
+    
+    if (loginCard && signupCard) {
+      loginCard.style.display = 'block';
+      signupCard.style.display = 'none';
+    }
+  }
+
+  async handleLogin(form) {
+    if (!form) return;
+
+    const formData = new FormData(form);
+    const email = formData.get('email');
+    const password = formData.get('password');
+    const remember = formData.get('remember');
+
+    // Basic validation
+    if (!email || !password) {
+      this.showNotification('Please fill in all required fields', 'error');
+      return;
+    }
+
+    this.showLoading('loginSpinner');
+
+    try {
+      // Simulate API call
+      await this.simulateApiCall();
+      
+      // Store auth data
+      const authData = {
+        email,
+        isAuthenticated: true,
+        loginTime: new Date().toISOString(),
+        remember: !!remember,
+        authMethod: 'email'
+      };
+
+      const storage = remember ? localStorage : sessionStorage;
+      storage.setItem('bluelock_auth', JSON.stringify(authData));
+
+      this.showNotification('Login successful!', 'success');
+      
+      // Redirect to cheat page after a short delay
+      setTimeout(() => {
+        this.redirectToCheat();
+      }, 1500);
+
+    } catch (error) {
+      console.error('Login error:', error);
+      this.showNotification('Login failed. Please check your credentials.', 'error');
+    } finally {
+      this.hideLoading('loginSpinner');
+    }
+  }
+
+  async handleSignup(form) {
+    if (!form) return;
+
+    const formData = new FormData(form);
+    const firstName = formData.get('firstName');
+    const lastName = formData.get('lastName');
+    const email = formData.get('signupEmail');
+    const password = formData.get('signupPassword');
+    const confirmPassword = formData.get('confirmPassword');
+    const terms = formData.get('terms');
+
+    // Validation
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+      this.showNotification('Please fill in all required fields', 'error');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      this.showNotification('Passwords do not match!', 'error');
+      return;
+    }
+
+    if (!terms) {
+      this.showNotification('Please accept the terms of service.', 'error');
+      return;
+    }
+
+    if (password.length < 8) {
+      this.showNotification('Password must be at least 8 characters long.', 'error');
+      return;
+    }
+
+    this.showLoading('signupSpinner');
+
+    try {
+      // Simulate API call
+      await this.simulateApiCall();
+
+      // Store auth data
+      const authData = {
+        firstName,
+        lastName,
+        email,
+        isAuthenticated: true,
+        loginTime: new Date().toISOString(),
+        isNewUser: true,
+        authMethod: 'email'
+      };
+
+      sessionStorage.setItem('bluelock_auth', JSON.stringify(authData));
+
+      this.hideLoading('signupSpinner');
+      this.showSuccessModal();
+
+    } catch (error) {
+      console.error('Signup error:', error);
+      this.showNotification('Registration failed. Please try again.', 'error');
+      this.hideLoading('signupSpinner');
+    }
+  }
+
+  handleDiscordLogin() {
+    try {
+      this.showNotification('Connecting to Discord...', 'info');
+      
+      const discordAuthUrl = `https://discord.com/api/oauth2/authorize?` +
+        `client_id=${this.discordClientId}&` +
+        `redirect_uri=${encodeURIComponent(this.redirectUri)}&` +
+        `response_type=code&` +
+        `scope=identify%20email`;
+
+      // Store auth method for callback handling
+      sessionStorage.setItem('auth_method', 'discord');
+      
+      // Redirect to Discord OAuth
+      window.location.href = discordAuthUrl;
+    } catch (error) {
+      console.error('Discord login error:', error);
+      this.showNotification('Discord login failed to initialize', 'error');
+    }
+  }
+
+  handleGoogleLogin() {
+    this.showNotification('Google OAuth integration coming soon! Please use email or Discord login.', 'info');
+    // No automatic authentication - just show the message
+  }
+
+  handleAppleLogin() {
+    this.showNotification('Apple Sign-In integration coming soon! Please use email or Discord login.', 'info');
+    // No automatic authentication - just show the message
+  }
+
+  handleOAuthCallback() {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const error = urlParams.get('error');
+      const authMethod = sessionStorage.getItem('auth_method');
+
+      if (error) {
+        this.showNotification(`OAuth error: ${error}`, 'error');
+        this.cleanupOAuthState();
+        return;
+      }
+
+      if (code && authMethod === 'discord') {
+        this.processDiscordCallback(code);
+      }
+    } catch (error) {
+      console.error('OAuth callback error:', error);
+      this.showNotification('Authentication callback failed', 'error');
+      this.cleanupOAuthState();
+    }
+  }
+
+  async processDiscordCallback(code) {
+    this.showNotification('Processing Discord authentication...', 'info');
+
+    try {
+      // Exchange code for access token
+      const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          client_id: this.discordClientId,
+          client_secret: 'iRYE5A3MOmTEbGKW5hMu-n3ibQJsbt7T', // You'll need to add this securely
+          code: code,
+          grant_type: 'authorization_code',
+          redirect_uri: this.redirectUri,
+        }),
+      });
+
+      if (!tokenResponse.ok) {
+        throw new Error('Failed to exchange code for token');
+      }
+
+      const tokenData = await tokenResponse.json();
+
+      // Fetch user data from Discord
+      const userResponse = await fetch('https://discord.com/api/users/@me', {
+        headers: {
+          Authorization: `Bearer ${tokenData.access_token}`,
+        },
+      });
+
+      if (!userResponse.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+
+      const discordUser = await userResponse.json();
+
+      // Create user data object
+      const userData = {
+        id: discordUser.id,
+        username: `${discordUser.username}#${discordUser.discriminator}`,
+        email: discordUser.email,
+        avatar: discordUser.avatar,
+        provider: 'discord'
+      };
+
+      this.simulateOAuthSuccess('Discord', userData);
+
+    } catch (error) {
+      console.error('Discord callback error:', error);
+      this.showNotification('Discord authentication failed.', 'error');
+      this.cleanupOAuthState();
+    } finally {
+      sessionStorage.removeItem('auth_method');
+    }
+  }
+
+  simulateOAuthSuccess(provider, userData) {
+    const authData = {
+      ...userData,
+      isAuthenticated: true,
+      loginTime: new Date().toISOString(),
+      authMethod: provider
+    };
+
+    sessionStorage.setItem('bluelock_auth', JSON.stringify(authData));
+    
+    this.showNotification(`Successfully authenticated with ${provider}!`, 'success');
+    
+    // Clean up URL
+    this.cleanupOAuthState();
+    
+    // Redirect to cheat page
+    setTimeout(() => {
+      this.redirectToCheat();
+    }, 1500);
+  }
+
+  cleanupOAuthState() {
+    // Remove OAuth parameters from URL
+    if (window.history && window.history.replaceState) {
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+    sessionStorage.removeItem('auth_method');
+  }
+
+  checkPasswordStrength(password) {
+    const strengthBar = document.querySelector('.strength-fill');
+    const strengthText = document.getElementById('strengthLevel');
+    
+    if (!strengthBar || !strengthText) return;
+
+    let strength = 0;
+    let level = 'Weak';
+    let color = '#ef4444';
+
+    if (password.length >= 8) strength += 1;
+    if (/[A-Z]/.test(password)) strength += 1;
+    if (/[a-z]/.test(password)) strength += 1;
+    if (/[0-9]/.test(password)) strength += 1;
+    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+
+    switch (strength) {
+      case 0:
+      case 1:
+        level = 'Weak';
+        color = '#ef4444';
+        break;
+      case 2:
+      case 3:
+        level = 'Medium';
+        color = '#f59e0b';
+        break;
+      case 4:
+      case 5:
+        level = 'Strong';
+        color = '#10b981';
+        break;
+    }
+
+    strengthBar.style.width = `${(strength / 5) * 100}%`;
+    strengthBar.style.background = color;
+    strengthText.textContent = level;
+    strengthText.style.color = color;
+  }
+
+  showLoading(spinnerId) {
+    const spinner = document.getElementById(spinnerId);
+    if (!spinner) return;
+
+    const button = spinner.closest('button');
+    const buttonText = button?.querySelector('.button-text');
+
+    if (spinner && button && buttonText) {
+      buttonText.style.opacity = '0';
+      spinner.style.display = 'block';
+      button.disabled = true;
+    }
+  }
+
+  hideLoading(spinnerId) {
+    const spinner = document.getElementById(spinnerId);
+    if (!spinner) return;
+
+    const button = spinner.closest('button');
+    const buttonText = button?.querySelector('.button-text');
+
+    if (spinner && button && buttonText) {
+      buttonText.style.opacity = '1';
+      spinner.style.display = 'none';
+      button.disabled = false;
+    }
+  }
+
+  showSuccessModal() {
+    const modal = document.getElementById('successModal');
+    if (modal) {
+      modal.style.display = 'flex';
+    }
+  }
+
+  closeSuccessModal() {
+    const modal = document.getElementById('successModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+    this.redirectToCheat();
+  }
+
+  redirectToCheat() {
+    try {
+      window.location.href = '../cheat/';
+    } catch (error) {
+      console.error('Redirect error:', error);
+      this.showNotification('Redirect failed. Please navigate manually.', 'error');
+    }
+  }
+
+  checkExistingAuth() {
+    try {
+      const authData = localStorage.getItem('bluelock_auth') || sessionStorage.getItem('bluelock_auth');
+      
+      if (authData) {
+        const parsed = JSON.parse(authData);
+        if (parsed.isAuthenticated) {
+          // User is already logged in, redirect to cheat page
+          this.redirectToCheat();
+        }
+      }
+    } catch (error) {
+      console.error('Auth check error:', error);
+      // Invalid auth data, clear it
+      localStorage.removeItem('bluelock_auth');
+      sessionStorage.removeItem('bluelock_auth');
+    }
+  }
+
+  showNotification(message, type = 'info') {
+    try {
+      // Remove existing notifications
+      document.querySelectorAll('.auth-notification').forEach(n => n.remove());
+
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.className = `auth-notification notification-${type}`;
+      notification.innerHTML = `
+        <div class="notification-content">
+          <div class="notification-icon">
+            ${this.getNotificationIcon(type)}
+          </div>
+          <span class="notification-message">${message}</span>
+          <button class="notification-close">×</button>
         </div>
-        <div class="nav-links">
-          <a href="../">Home</a>
-          <a href="../status/">Status</a>
-        </div>
-      </div>
-    </nav>
+      `;
 
-    <!-- Auth Container -->
-    <div class="auth-container">
-      <div class="auth-card">
-        <div class="auth-header">
-          <img src="../bluelocklogo.png" alt="BlueLock" class="auth-logo" />
-          <h1 class="auth-title">Welcome Back</h1>
-          <p class="auth-subtitle">Sign in to access your BlueLock account</p>
-        </div>
+      // Style the notification
+      notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: ${type === 'success' ? 'rgba(34, 197, 94, 0.9)' : 
+                     type === 'error' ? 'rgba(239, 68, 68, 0.9)' : 
+                     'rgba(59, 130, 246, 0.9)'};
+        color: white;
+        padding: 16px 20px;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        max-width: 400px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      `;
 
-        <!-- Login Form -->
-        <form class="auth-form" id="loginForm">
-          <div class="form-group">
-            <label for="email" class="form-label">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              class="form-input"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
+      document.body.appendChild(notification);
 
-          <div class="form-group">
-            <label for="password" class="form-label">Password</label>
-            <div class="password-input-container">
-              <input
-                type="password"
-                id="password"
-                name="password"
-                class="form-input"
-                placeholder="Enter your password"
-                required
-              />
-              <button type="button" class="password-toggle" id="passwordToggle">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
-                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
-                </svg>
-              </button>
-            </div>
-          </div>
+      // Auto remove after 4 seconds
+      const timeout = setTimeout(() => {
+        if (notification.parentNode) {
+          notification.remove();
+        }
+      }, 4000);
 
-          <div class="form-options">
-            <label class="checkbox-container">
-              <input type="checkbox" id="remember" name="remember" />
-              <span class="checkmark"></span>
-              Remember me
-            </label>
-            <a href="#" class="forgot-password">Forgot password?</a>
-          </div>
+      // Manual close
+      const closeBtn = notification.querySelector('.notification-close');
+      if (closeBtn) {
+        closeBtn.onclick = () => {
+          clearTimeout(timeout);
+          notification.style.animation = 'slideOut 0.3s ease';
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.remove();
+            }
+          }, 300);
+        };
+      }
+    } catch (error) {
+      console.error('Notification error:', error);
+      // Fallback to alert if notification fails
+      alert(message);
+    }
+  }
 
-          <button type="submit" class="btn-primary auth-button">
-            <span class="button-text">Sign In</span>
-            <div class="loading-spinner" id="loginSpinner">
-              <div class="spinner"></div>
-            </div>
-          </button>
+  getNotificationIcon(type) {
+    const icons = {
+      success: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+      error: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+      info: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+    };
+    return icons[type] || icons.info;
+  }
 
-          <div class="auth-divider">
-            <span>or</span>
-          </div>
+  async simulateApiCall() {
+    // Simulate network delay
+    return new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+  }
+}
 
-          <button type="button" class="btn-social discord-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.010c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
-            </svg>
-            Continue with Discord
-          </button>
+// Add notification animations if not already present
+if (!document.getElementById('auth-notification-styles')) {
+  const notificationStyles = document.createElement('style');
+  notificationStyles.id = 'auth-notification-styles';
+  notificationStyles.textContent = `
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+    
+    .notification-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .notification-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+    
+    .notification-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  `;
+  document.head.appendChild(notificationStyles);
+}
 
-          <button type="button" class="btn-social google-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            Continue with Google
-          </button>
+// Initialize auth manager when page loads
+let authManager;
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    authManager = new AuthManager();
+  });
+} else {
+  authManager = new AuthManager();
+}
 
-          <button type="button" class="btn-social apple-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-            </svg>
-            Continue with Apple
-          </button>
-        </form>
-
-        <div class="auth-footer">
-          <p class="auth-switch">
-            Don't have an account?
-            <a href="#" id="showSignup" class="auth-link">Sign up here</a>
-          </p>
-        </div>
-      </div>
-
-      <!-- Signup Form (Hidden by default) -->
-      <div class="auth-card signup-card" id="signupCard" style="display: none;">
-        <div class="auth-header">
-          <img src="../bluelocklogo.png" alt="BlueLock" class="auth-logo" />
-          <h1 class="auth-title">Create Account</h1>
-          <p class="auth-subtitle">Join BlueLock and unlock your potential</p>
-        </div>
-
-        <form class="auth-form" id="signupForm">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="firstName" class="form-label">First Name</label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                class="form-input"
-                placeholder="Enter your first name"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label for="lastName" class="form-label">Last Name</label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                class="form-input"
-                placeholder="Enter your last name"
-                required
-              />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="signupEmail" class="form-label">Email Address</label>
-            <input
-              type="email"
-              id="signupEmail"
-              name="signupEmail"
-              class="form-input"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="signupPassword" class="form-label">Password</label>
-            <div class="password-input-container">
-              <input
-                type="password"
-                id="signupPassword"
-                name="signupPassword"
-                class="form-input"
-                placeholder="Create a strong password"
-                required
-              />
-              <button type="button" class="password-toggle" id="signupPasswordToggle">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
-                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
-                </svg>
-              </button>
-            </div>
-            <div class="password-strength" id="passwordStrength">
-              <div class="strength-bar">
-                <div class="strength-fill"></div>
-              </div>
-              <span class="strength-text">Password strength: <span id="strengthLevel">Weak</span></span>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="confirmPassword" class="form-label">Confirm Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              class="form-input"
-              placeholder="Confirm your password"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="checkbox-container terms-checkbox">
-              <input type="checkbox" id="terms" name="terms" required />
-              <span class="checkmark"></span>
-              <span class="terms-text">I agree to the <a href="../terms/" class="auth-link">Terms of Service</a> and <a href="#" class="auth-link">Privacy Policy</a></span>
-            </label>
-          </div>
-
-          <button type="submit" class="btn-primary auth-button">
-            <span class="button-text">Create Account</span>
-            <div class="loading-spinner" id="signupSpinner">
-              <div class="spinner"></div>
-            </div>
-          </button>
-
-          <div class="auth-divider">
-            <span>or</span>
-          </div>
-
-          <button type="button" class="btn-social discord-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.010c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
-            </svg>
-            Sign up with Discord
-          </button>
-
-          <button type="button" class="btn-social google-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            Sign up with Google
-          </button>
-
-          <button type="button" class="btn-social apple-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-            </svg>
-            Sign up with Apple
-          </button>
-        </form>
-
-        <div class="auth-footer">
-          <p class="auth-switch">
-            Already have an account?
-            <a href="#" id="showLogin" class="auth-link">Sign in here</a>
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div class="modal-overlay" id="successModal" style="display: none;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <div class="success-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" fill="#30d158"/>
-              <path d="M8 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <h2 class="modal-title">Welcome to BlueLock!</h2>
-          <p class="modal-description">Your account has been created successfully.</p>
-        </div>
-        <button class="btn-primary modal-button" id="closeModal">
-          Continue to Dashboard
-        </button>
-      </div>
-    </div>
-
-    <script src="auth.js"></script>
-  </body>
-</html>
+// Global error handler
+window.addEventListener('error', (event) => {
+  console.error('Global error:', event.error);
+  if (authManager && authManager.isInitialized) {
+    authManager.showNotification('An unexpected error occurred', 'error');
+  }
+});
+    authManager.showNotification('An unexpected error occurred', 'error');
+  }
+});
