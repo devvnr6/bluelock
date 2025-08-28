@@ -311,29 +311,11 @@ class AuthManager {
   }
 
   handleGoogleLogin() {
-    this.showNotification('Google OAuth integration coming soon!', 'info');
-    
-    // For demo purposes, simulate successful login
-    setTimeout(() => {
-      this.simulateOAuthSuccess('google', {
-        email: 'user@gmail.com',
-        name: 'Google User',
-        provider: 'google'
-      });
-    }, 1500);
+    this.showNotification('Google OAuth integration coming soon! Please use email or Discord login.', 'info');
   }
 
   handleAppleLogin() {
-    this.showNotification('Apple Sign-In integration coming soon!', 'info');
-    
-    // For demo purposes, simulate successful login
-    setTimeout(() => {
-      this.simulateOAuthSuccess('apple', {
-        email: 'user@icloud.com',
-        name: 'Apple User',
-        provider: 'apple'
-      });
-    }, 1500);
+    this.showNotification('Apple Sign-In integration coming soon! Please use email or Discord login.', 'info');
   }
 
   handleOAuthCallback() {
