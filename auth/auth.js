@@ -1,529 +1,672 @@
-// DOM Elements
-const loginForm = document.getElementById('loginForm');
-const signupForm = document.getElementById('signupForm');
-const loginCard = document.querySelector('.auth-card:not(.signup-card)');
-const signupCard = document.getElementById('signupCard');
-const showSignupBtn = document.getElementById('showSignup');
-const showLoginBtn = document.getElementById('showLogin');
-const passwordToggle = document.getElementById('passwordToggle');
-const signupPasswordToggle = document.getElementById('signupPasswordToggle');
-const passwordInput = document.getElementById('password');
-const signupPasswordInput = document.getElementById('signupPassword');
-const confirmPasswordInput = document.getElementById('confirmPassword');
-const passwordStrength = document.getElementById('passwordStrength');
-const strengthLevel = document.getElementById('strengthLevel');
-const strengthFill = document.querySelector('.strength-fill');
-const successModal = document.getElementById('successModal');
-const closeModalBtn = document.getElementById('closeModal');
-
-// Form switching
-showSignupBtn.addEventListener('click', (e) => {
-  e.preventDefault();
-  switchToSignup();
-});
-
-showLoginBtn.addEventListener('click', (e) => {
-  e.preventDefault();
-  switchToLogin();
-});
-
-function switchToSignup() {
-  loginCard.style.display = 'none';
-  signupCard.style.display = 'block';
-  signupCard.style.animation = 'slideUp 0.6s ease-out';
-}
-
-function switchToLogin() {
-  signupCard.style.display = 'none';
-  loginCard.style.display = 'block';
-  loginCard.style.animation = 'slideUp 0.6s ease-out';
-}
-
-// Password visibility toggle
-passwordToggle.addEventListener('click', () => {
-  togglePasswordVisibility(passwordInput, passwordToggle);
-});
-
-signupPasswordToggle.addEventListener('click', () => {
-  togglePasswordVisibility(signupPasswordInput, signupPasswordToggle);
-});
-
-function togglePasswordVisibility(input, toggle) {
-  const isPassword = input.type === 'password';
-  input.type = isPassword ? 'text' : 'password';
-  
-  const svg = toggle.querySelector('svg');
-  if (isPassword) {
-    // Show eye-off icon
-    svg.innerHTML = `
-      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="currentColor" stroke-width="2" fill="none"/>
-      <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2"/>
-    `;
-  } else {
-    // Show eye icon
-    svg.innerHTML = `
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
-      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
-    `;
-  }
-}
-
-// Password strength checker
-signupPasswordInput.addEventListener('input', (e) => {
-  const password = e.target.value;
-  const strength = calculatePasswordStrength(password);
-  updatePasswordStrength(strength);
-});
-
-function calculatePasswordStrength(password) {
-  let score = 0;
-  let feedback = [];
-
-  if (password.length === 0) {
-    return { score: 0, feedback: [], level: 'None' };
+// AuthManager class to handle authentication
+class AuthManager {
+  constructor() {
+    this.discordClientId = '1234567890123456789'; // Replace with actual Discord client ID
+    this.redirectUri = window.location.origin + '/auth/';
+    this.isInitialized = false;
+    this.init();
   }
 
-  // Length check
-  if (password.length >= 8) score += 1;
-  else feedback.push('At least 8 characters');
-
-  // Lowercase check
-  if (/[a-z]/.test(password)) score += 1;
-  else feedback.push('One lowercase letter');
-
-  // Uppercase check
-  if (/[A-Z]/.test(password)) score += 1;
-  else feedback.push('One uppercase letter');
-
-  // Number check
-  if (/\d/.test(password)) score += 1;
-  else feedback.push('One number');
-
-  // Special character check
-  if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score += 1;
-  else feedback.push('One special character');
-
-  // Determine level
-  let level;
-  if (score <= 1) level = 'Very Weak';
-  else if (score === 2) level = 'Weak';
-  else if (score === 3) level = 'Fair';
-  else if (score === 4) level = 'Good';
-  else level = 'Strong';
-
-  return { score, feedback, level };
-}
-
-function updatePasswordStrength(strength) {
-  const percentage = (strength.score / 5) * 100;
-  strengthFill.style.width = `${percentage}%`;
-  strengthLevel.textContent = strength.level;
-  
-  // Update color based on strength
-  if (strength.score <= 1) {
-    strengthFill.style.background = '#ff3b30';
-  } else if (strength.score === 2) {
-    strengthFill.style.background = '#ff9500';
-  } else if (strength.score === 3) {
-    strengthFill.style.background = '#ffcc00';
-  } else if (strength.score === 4) {
-    strengthFill.style.background = '#30d158';
-  } else {
-    strengthFill.style.background = 'linear-gradient(90deg, #30d158, #007aff)';
-  }
-}
-
-// Form validation
-function validateEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
-
-function validateForm(form) {
-  const inputs = form.querySelectorAll('.form-input[required]');
-  let isValid = true;
-  
-  inputs.forEach(input => {
-    const value = input.value.trim();
-    removeValidationMessages(input);
-    
-    if (!value) {
-      showError(input, 'This field is required');
-      isValid = false;
-    } else if (input.type === 'email' && !validateEmail(value)) {
-      showError(input, 'Please enter a valid email address');
-      isValid = false;
-    } else if (input.id === 'signupPassword') {
-      const strength = calculatePasswordStrength(value);
-      if (strength.score < 3) {
-        showError(input, 'Password is too weak');
-        isValid = false;
-      } else {
-        showSuccess(input, 'Good password');
-      }
-    } else if (input.id === 'confirmPassword') {
-      const password = signupPasswordInput.value;
-      if (value !== password) {
-        showError(input, 'Passwords do not match');
-        isValid = false;
-      } else {
-        showSuccess(input, 'Passwords match');
-      }
+  init() {
+    // Wait for DOM to be fully loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.setupComponents());
     } else {
-      showSuccess(input, '');
-    }
-  });
-  
-  // Check terms checkbox for signup
-  if (form.id === 'signupForm') {
-    const termsCheckbox = form.querySelector('#terms');
-    if (!termsCheckbox.checked) {
-      showError(termsCheckbox.closest('.form-group'), 'You must agree to the terms and conditions');
-      isValid = false;
+      this.setupComponents();
     }
   }
-  
-  return isValid;
-}
 
-function showError(input, message) {
-  input.classList.add('error');
-  input.classList.remove('success');
-  
-  if (message) {
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message';
-    errorDiv.textContent = message;
-    
-    const parent = input.closest('.form-group');
-    parent.appendChild(errorDiv);
+  setupComponents() {
+    try {
+      this.setupEventListeners();
+      this.handleOAuthCallback();
+      this.checkExistingAuth();
+      this.isInitialized = true;
+    } catch (error) {
+      console.error('Failed to initialize AuthManager:', error);
+      this.showNotification('Authentication system failed to initialize', 'error');
+    }
   }
-}
 
-function showSuccess(input, message) {
-  input.classList.add('success');
-  input.classList.remove('error');
-  
-  if (message) {
-    const successDiv = document.createElement('div');
-    successDiv.className = 'success-message';
-    successDiv.textContent = message;
+  setupEventListeners() {
+    // Form switching with null checks
+    const showSignupBtn = document.getElementById('showSignup');
+    const showLoginBtn = document.getElementById('showLogin');
     
-    const parent = input.closest('.form-group');
-    parent.appendChild(successDiv);
-  }
-}
+    if (showSignupBtn) {
+      showSignupBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.switchToSignup();
+      });
+    }
 
-function removeValidationMessages(input) {
-  const parent = input.closest('.form-group');
-  const existingMessages = parent.querySelectorAll('.error-message, .success-message');
-  existingMessages.forEach(msg => msg.remove());
-  
-  input.classList.remove('error', 'success');
-}
+    if (showLoginBtn) {
+      showLoginBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.switchToLogin();
+      });
+    }
 
-// Loading states
-function setLoadingState(button, isLoading) {
-  const spinner = button.querySelector('.loading-spinner');
-  const text = button.querySelector('.button-text');
-  
-  if (isLoading) {
-    button.classList.add('loading');
-    button.disabled = true;
-    spinner.style.display = 'block';
-    text.style.opacity = '0';
-  } else {
-    button.classList.remove('loading');
-    button.disabled = false;
-    spinner.style.display = 'none';
-    text.style.opacity = '1';
-  }
-}
+    // Password toggles
+    this.setupPasswordToggles();
 
-// Form submissions
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  if (!validateForm(loginForm)) {
-    return;
+    // Form submissions
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    if (loginForm) {
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleLogin(e.target);
+      });
+    }
+
+    if (signupForm) {
+      signupForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleSignup(e.target);
+      });
+    }
+
+    // Social logins with null checks
+    this.setupSocialLogins();
+
+    // Password strength checker
+    const signupPasswordInput = document.getElementById('signupPassword');
+    if (signupPasswordInput) {
+      signupPasswordInput.addEventListener('input', (e) => {
+        this.checkPasswordStrength(e.target.value);
+      });
+    }
+
+    // Success modal
+    const closeModalBtn = document.getElementById('closeModal');
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener('click', () => {
+        this.closeSuccessModal();
+      });
+    }
   }
-  
-  const submitBtn = loginForm.querySelector('.btn-primary');
-  setLoadingState(submitBtn, true);
-  
-  // Simulate API call
-  try {
-    await simulateAPICall();
+
+  setupPasswordToggles() {
+    const passwordToggle = document.getElementById('passwordToggle');
+    const signupPasswordToggle = document.getElementById('signupPasswordToggle');
+
+    if (passwordToggle) {
+      passwordToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.togglePassword('password', 'passwordToggle');
+      });
+    }
+
+    if (signupPasswordToggle) {
+      signupPasswordToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.togglePassword('signupPassword', 'signupPasswordToggle');
+      });
+    }
+  }
+
+  setupSocialLogins() {
+    // Discord buttons
+    document.querySelectorAll('.discord-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handleDiscordLogin();
+      });
+    });
+
+    // Google buttons
+    document.querySelectorAll('.google-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handleGoogleLogin();
+      });
+    });
+
+    // Apple buttons
+    document.querySelectorAll('.apple-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handleAppleLogin();
+      });
+    });
+  }
+
+  togglePassword(inputId, toggleId) {
+    const input = document.getElementById(inputId);
+    const toggle = document.getElementById(toggleId);
     
-    // Success - redirect or show success message
-    console.log('Login successful');
-    showNotification('Login successful! Redirecting...', 'success');
-    
-    // Simulate redirect after delay
-    setTimeout(() => {
-      window.location.href = '../'; // Redirect to home page
-    }, 2000);
-    
-  } catch (error) {
-    console.error('Login failed:', error);
-    showNotification('Login failed. Please check your credentials.', 'error');
-  } finally {
-    setLoadingState(submitBtn, false);
-  }
-});
-
-signupForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  if (!validateForm(signupForm)) {
-    return;
-  }
-  
-  const submitBtn = signupForm.querySelector('.btn-primary');
-  setLoadingState(submitBtn, true);
-  
-  // Simulate API call
-  try {
-    await simulateAPICall();
-    
-    // Success - show modal
-    showSuccessModal();
-    
-  } catch (error) {
-    console.error('Signup failed:', error);
-    showNotification('Signup failed. Please try again.', 'error');
-  } finally {
-    setLoadingState(submitBtn, false);
-  }
-});
-
-// Success modal
-function showSuccessModal() {
-  successModal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function hideSuccessModal() {
-  successModal.style.display = 'none';
-  document.body.style.overflow = 'auto';
-}
-
-closeModalBtn.addEventListener('click', () => {
-  hideSuccessModal();
-  // Redirect to main page
-  window.location.href = '../';
-});
-
-// Click outside modal to close
-successModal.addEventListener('click', (e) => {
-  if (e.target === successModal) {
-    hideSuccessModal();
-  }
-});
-
-// Social login handlers
-document.querySelectorAll('.btn-social').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.preventDefault();
-    let provider;
-    
-    if (btn.classList.contains('discord-btn')) {
-      provider = 'Discord';
-    } else if (btn.classList.contains('google-btn')) {
-      provider = 'Google';
-    } else if (btn.classList.contains('apple-btn')) {
-      provider = 'Apple';
+    if (!input || !toggle) {
+      console.warn(`Password toggle elements not found: ${inputId}, ${toggleId}`);
+      return;
     }
     
-    setLoadingState(btn, true);
-    
-    // Simulate social auth
-    setTimeout(() => {
-      setLoadingState(btn, false);
-      showNotification(`${provider} authentication would be handled here.`, 'info');
-    }, 2000);
-  });
-});
-
-// Utility functions
-function simulateAPICall() {
-  return new Promise((resolve) => {
-    // Simulate network delay
-    setTimeout(() => {
-      resolve();
-    }, 2000);
-  });
-}
-
-function showNotification(message, type = 'info') {
-  // Create notification element
-  const notification = document.createElement('div');
-  notification.className = `notification notification-${type}`;
-  notification.innerHTML = `
-    <div class="notification-content">
-      <span class="notification-message">${message}</span>
-      <button class="notification-close">&times;</button>
-    </div>
-  `;
-  
-  // Add to body
-  document.body.appendChild(notification);
-  
-  // Show notification
-  setTimeout(() => {
-    notification.classList.add('show');
-  }, 100);
-  
-  // Auto remove after 5 seconds
-  setTimeout(() => {
-    removeNotification(notification);
-  }, 5000);
-  
-  // Close button handler
-  notification.querySelector('.notification-close').addEventListener('click', () => {
-    removeNotification(notification);
-  });
-}
-
-function removeNotification(notification) {
-  notification.classList.remove('show');
-  setTimeout(() => {
-    if (notification.parentNode) {
-      notification.parentNode.removeChild(notification);
-    }
-  }, 300);
-}
-
-// Real-time validation
-document.querySelectorAll('.form-input').forEach(input => {
-  input.addEventListener('blur', () => {
-    if (input.value.trim()) {
-      validateSingleField(input);
-    }
-  });
-  
-  input.addEventListener('input', () => {
-    // Clear error state on input
-    if (input.classList.contains('error')) {
-      removeValidationMessages(input);
-    }
-  });
-});
-
-function validateSingleField(input) {
-  const value = input.value.trim();
-  removeValidationMessages(input);
-  
-  if (input.type === 'email' && value && !validateEmail(value)) {
-    showError(input, 'Please enter a valid email address');
-  } else if (input.id === 'confirmPassword' && value) {
-    const password = signupPasswordInput.value;
-    if (value !== password) {
-      showError(input, 'Passwords do not match');
+    if (input.type === 'password') {
+      input.type = 'text';
+      toggle.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="currentColor" stroke-width="2"/>
+          <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      `;
     } else {
-      showSuccess(input, 'Passwords match');
+      input.type = 'password';
+      toggle.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+          <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+        </svg>
+      `;
     }
-  } else if (value) {
-    showSuccess(input, '');
   }
-}
 
-// Keyboard navigation improvements
-document.addEventListener('keydown', (e) => {
-  // ESC key to close modal
-  if (e.key === 'Escape' && successModal.style.display === 'flex') {
-    hideSuccessModal();
-  }
-  
-  // Enter key in forms
-  if (e.key === 'Enter' && e.target.classList.contains('form-input')) {
-    const form = e.target.closest('form');
-    const inputs = Array.from(form.querySelectorAll('.form-input'));
-    const currentIndex = inputs.indexOf(e.target);
+  switchToSignup() {
+    const loginCard = document.querySelector('.auth-card:not(.signup-card)');
+    const signupCard = document.getElementById('signupCard');
     
-    if (currentIndex < inputs.length - 1) {
-      // Focus next input
-      e.preventDefault();
-      inputs[currentIndex + 1].focus();
+    if (loginCard && signupCard) {
+      loginCard.style.display = 'none';
+      signupCard.style.display = 'block';
     }
   }
-});
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-  // Focus first input
-  const firstInput = document.querySelector('.form-input');
-  if (firstInput) {
-    firstInput.focus();
+  switchToLogin() {
+    const loginCard = document.querySelector('.auth-card:not(.signup-card)');
+    const signupCard = document.getElementById('signupCard');
+    
+    if (loginCard && signupCard) {
+      loginCard.style.display = 'block';
+      signupCard.style.display = 'none';
+    }
   }
-  
-  // Add notification styles if not already present
-  if (!document.querySelector('#notification-styles')) {
-    const styles = document.createElement('style');
-    styles.id = 'notification-styles';
-    styles.textContent = `
-      .notification {
+
+  async handleLogin(form) {
+    if (!form) return;
+
+    const formData = new FormData(form);
+    const email = formData.get('email');
+    const password = formData.get('password');
+    const remember = formData.get('remember');
+
+    // Basic validation
+    if (!email || !password) {
+      this.showNotification('Please fill in all required fields', 'error');
+      return;
+    }
+
+    this.showLoading('loginSpinner');
+
+    try {
+      // Simulate API call
+      await this.simulateApiCall();
+      
+      // Store auth data
+      const authData = {
+        email,
+        isAuthenticated: true,
+        loginTime: new Date().toISOString(),
+        remember: !!remember,
+        authMethod: 'email'
+      };
+
+      const storage = remember ? localStorage : sessionStorage;
+      storage.setItem('bluelock_auth', JSON.stringify(authData));
+
+      this.showNotification('Login successful!', 'success');
+      
+      // Redirect to cheat page after a short delay
+      setTimeout(() => {
+        this.redirectToCheat();
+      }, 1500);
+
+    } catch (error) {
+      console.error('Login error:', error);
+      this.showNotification('Login failed. Please check your credentials.', 'error');
+    } finally {
+      this.hideLoading('loginSpinner');
+    }
+  }
+
+  async handleSignup(form) {
+    if (!form) return;
+
+    const formData = new FormData(form);
+    const firstName = formData.get('firstName');
+    const lastName = formData.get('lastName');
+    const email = formData.get('signupEmail');
+    const password = formData.get('signupPassword');
+    const confirmPassword = formData.get('confirmPassword');
+    const terms = formData.get('terms');
+
+    // Validation
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+      this.showNotification('Please fill in all required fields', 'error');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      this.showNotification('Passwords do not match!', 'error');
+      return;
+    }
+
+    if (!terms) {
+      this.showNotification('Please accept the terms of service.', 'error');
+      return;
+    }
+
+    if (password.length < 8) {
+      this.showNotification('Password must be at least 8 characters long.', 'error');
+      return;
+    }
+
+    this.showLoading('signupSpinner');
+
+    try {
+      // Simulate API call
+      await this.simulateApiCall();
+
+      // Store auth data
+      const authData = {
+        firstName,
+        lastName,
+        email,
+        isAuthenticated: true,
+        loginTime: new Date().toISOString(),
+        isNewUser: true,
+        authMethod: 'email'
+      };
+
+      sessionStorage.setItem('bluelock_auth', JSON.stringify(authData));
+
+      this.hideLoading('signupSpinner');
+      this.showSuccessModal();
+
+    } catch (error) {
+      console.error('Signup error:', error);
+      this.showNotification('Registration failed. Please try again.', 'error');
+      this.hideLoading('signupSpinner');
+    }
+  }
+
+  handleDiscordLogin() {
+    try {
+      this.showNotification('Connecting to Discord...', 'info');
+      
+      const discordAuthUrl = `https://discord.com/api/oauth2/authorize?` +
+        `client_id=${this.discordClientId}&` +
+        `redirect_uri=${encodeURIComponent(this.redirectUri)}&` +
+        `response_type=code&` +
+        `scope=identify%20email`;
+
+      // Store auth method for callback handling
+      sessionStorage.setItem('auth_method', 'discord');
+      
+      // Redirect to Discord OAuth
+      window.location.href = discordAuthUrl;
+    } catch (error) {
+      console.error('Discord login error:', error);
+      this.showNotification('Discord login failed to initialize', 'error');
+    }
+  }
+
+  handleGoogleLogin() {
+    this.showNotification('Google OAuth integration coming soon!', 'info');
+    
+    // For demo purposes, simulate successful login
+    setTimeout(() => {
+      this.simulateOAuthSuccess('google', {
+        email: 'user@gmail.com',
+        name: 'Google User',
+        provider: 'google'
+      });
+    }, 1500);
+  }
+
+  handleAppleLogin() {
+    this.showNotification('Apple Sign-In integration coming soon!', 'info');
+    
+    // For demo purposes, simulate successful login
+    setTimeout(() => {
+      this.simulateOAuthSuccess('apple', {
+        email: 'user@icloud.com',
+        name: 'Apple User',
+        provider: 'apple'
+      });
+    }, 1500);
+  }
+
+  handleOAuthCallback() {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const error = urlParams.get('error');
+      const authMethod = sessionStorage.getItem('auth_method');
+
+      if (error) {
+        this.showNotification(`OAuth error: ${error}`, 'error');
+        this.cleanupOAuthState();
+        return;
+      }
+
+      if (code && authMethod === 'discord') {
+        this.processDiscordCallback(code);
+      }
+    } catch (error) {
+      console.error('OAuth callback error:', error);
+      this.showNotification('Authentication callback failed', 'error');
+      this.cleanupOAuthState();
+    }
+  }
+
+  async processDiscordCallback(code) {
+    this.showNotification('Processing Discord authentication...', 'info');
+
+    try {
+      // In a real implementation, you would exchange the code for an access token
+      // and then fetch user data from Discord's API
+      
+      // For demo purposes, simulate successful Discord auth
+      await this.simulateApiCall();
+
+      const discordUser = {
+        id: '123456789012345678',
+        username: 'DiscordUser#1234',
+        email: 'user@discord.com',
+        avatar: null,
+        provider: 'discord'
+      };
+
+      this.simulateOAuthSuccess('discord', discordUser);
+
+    } catch (error) {
+      console.error('Discord callback error:', error);
+      this.showNotification('Discord authentication failed.', 'error');
+      this.cleanupOAuthState();
+    } finally {
+      sessionStorage.removeItem('auth_method');
+    }
+  }
+
+  simulateOAuthSuccess(provider, userData) {
+    const authData = {
+      ...userData,
+      isAuthenticated: true,
+      loginTime: new Date().toISOString(),
+      authMethod: provider
+    };
+
+    sessionStorage.setItem('bluelock_auth', JSON.stringify(authData));
+    
+    this.showNotification(`Successfully authenticated with ${provider}!`, 'success');
+    
+    // Clean up URL
+    this.cleanupOAuthState();
+    
+    // Redirect to cheat page
+    setTimeout(() => {
+      this.redirectToCheat();
+    }, 1500);
+  }
+
+  cleanupOAuthState() {
+    // Remove OAuth parameters from URL
+    if (window.history && window.history.replaceState) {
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+    sessionStorage.removeItem('auth_method');
+  }
+
+  checkPasswordStrength(password) {
+    const strengthBar = document.querySelector('.strength-fill');
+    const strengthText = document.getElementById('strengthLevel');
+    
+    if (!strengthBar || !strengthText) return;
+
+    let strength = 0;
+    let level = 'Weak';
+    let color = '#ef4444';
+
+    if (password.length >= 8) strength += 1;
+    if (/[A-Z]/.test(password)) strength += 1;
+    if (/[a-z]/.test(password)) strength += 1;
+    if (/[0-9]/.test(password)) strength += 1;
+    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+
+    switch (strength) {
+      case 0:
+      case 1:
+        level = 'Weak';
+        color = '#ef4444';
+        break;
+      case 2:
+      case 3:
+        level = 'Medium';
+        color = '#f59e0b';
+        break;
+      case 4:
+      case 5:
+        level = 'Strong';
+        color = '#10b981';
+        break;
+    }
+
+    strengthBar.style.width = `${(strength / 5) * 100}%`;
+    strengthBar.style.background = color;
+    strengthText.textContent = level;
+    strengthText.style.color = color;
+  }
+
+  showLoading(spinnerId) {
+    const spinner = document.getElementById(spinnerId);
+    if (!spinner) return;
+
+    const button = spinner.closest('button');
+    const buttonText = button?.querySelector('.button-text');
+
+    if (spinner && button && buttonText) {
+      buttonText.style.opacity = '0';
+      spinner.style.display = 'block';
+      button.disabled = true;
+    }
+  }
+
+  hideLoading(spinnerId) {
+    const spinner = document.getElementById(spinnerId);
+    if (!spinner) return;
+
+    const button = spinner.closest('button');
+    const buttonText = button?.querySelector('.button-text');
+
+    if (spinner && button && buttonText) {
+      buttonText.style.opacity = '1';
+      spinner.style.display = 'none';
+      button.disabled = false;
+    }
+  }
+
+  showSuccessModal() {
+    const modal = document.getElementById('successModal');
+    if (modal) {
+      modal.style.display = 'flex';
+    }
+  }
+
+  closeSuccessModal() {
+    const modal = document.getElementById('successModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+    this.redirectToCheat();
+  }
+
+  redirectToCheat() {
+    try {
+      window.location.href = '../cheat/';
+    } catch (error) {
+      console.error('Redirect error:', error);
+      this.showNotification('Redirect failed. Please navigate manually.', 'error');
+    }
+  }
+
+  checkExistingAuth() {
+    try {
+      const authData = localStorage.getItem('bluelock_auth') || sessionStorage.getItem('bluelock_auth');
+      
+      if (authData) {
+        const parsed = JSON.parse(authData);
+        if (parsed.isAuthenticated) {
+          // User is already logged in, redirect to cheat page
+          this.redirectToCheat();
+        }
+      }
+    } catch (error) {
+      console.error('Auth check error:', error);
+      // Invalid auth data, clear it
+      localStorage.removeItem('bluelock_auth');
+      sessionStorage.removeItem('bluelock_auth');
+    }
+  }
+
+  showNotification(message, type = 'info') {
+    try {
+      // Remove existing notifications
+      document.querySelectorAll('.auth-notification').forEach(n => n.remove());
+
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.className = `auth-notification notification-${type}`;
+      notification.innerHTML = `
+        <div class="notification-content">
+          <div class="notification-icon">
+            ${this.getNotificationIcon(type)}
+          </div>
+          <span class="notification-message">${message}</span>
+          <button class="notification-close">×</button>
+        </div>
+      `;
+
+      // Style the notification
+      notification.style.cssText = `
         position: fixed;
-        top: 20px;
+        top: 100px;
         right: 20px;
-        max-width: 400px;
-        background: white;
+        background: ${type === 'success' ? 'rgba(34, 197, 94, 0.9)' : 
+                     type === 'error' ? 'rgba(239, 68, 68, 0.9)' : 
+                     'rgba(59, 130, 246, 0.9)'};
+        color: white;
+        padding: 16px 20px;
         border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        border-left: 4px solid #007aff;
-        z-index: 3000;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
+        backdrop-filter: blur(10px);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        max-width: 400px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      `;
+
+      document.body.appendChild(notification);
+
+      // Auto remove after 4 seconds
+      const timeout = setTimeout(() => {
+        if (notification.parentNode) {
+          notification.remove();
+        }
+      }, 4000);
+
+      // Manual close
+      const closeBtn = notification.querySelector('.notification-close');
+      if (closeBtn) {
+        closeBtn.onclick = () => {
+          clearTimeout(timeout);
+          notification.style.animation = 'slideOut 0.3s ease';
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.remove();
+            }
+          }, 300);
+        };
       }
-      
-      .notification.show {
-        transform: translateX(0);
-      }
-      
-      .notification-success {
-        border-left-color: #30d158;
-      }
-      
-      .notification-error {
-        border-left-color: #ff3b30;
-      }
-      
-      .notification-info {
-        border-left-color: #007aff;
-      }
-      
-      .notification-content {
-        padding: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-      }
-      
-      .notification-message {
-        flex: 1;
-        font-size: 0.875rem;
-        color: #333;
-      }
-      
-      .notification-close {
-        background: none;
-        border: none;
-        font-size: 1.25rem;
-        color: #666;
-        cursor: pointer;
-        padding: 0;
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
-      .notification-close:hover {
-        color: #333;
-      }
-    `;
-    document.head.appendChild(styles);
+    } catch (error) {
+      console.error('Notification error:', error);
+      // Fallback to alert if notification fails
+      alert(message);
+    }
+  }
+
+  getNotificationIcon(type) {
+    const icons = {
+      success: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+      error: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+      info: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+    };
+    return icons[type] || icons.info;
+  }
+
+  async simulateApiCall() {
+    // Simulate network delay
+    return new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+  }
+}
+
+// Add notification animations if not already present
+if (!document.getElementById('auth-notification-styles')) {
+  const notificationStyles = document.createElement('style');
+  notificationStyles.id = 'auth-notification-styles';
+  notificationStyles.textContent = `
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+    
+    .notification-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .notification-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+    
+    .notification-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  `;
+  document.head.appendChild(notificationStyles);
+}
+
+// Initialize auth manager when page loads
+let authManager;
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    authManager = new AuthManager();
+  });
+} else {
+  authManager = new AuthManager();
+}
+
+// Global error handler
+window.addEventListener('error', (event) => {
+  console.error('Global error:', event.error);
+  if (authManager && authManager.isInitialized) {
+    authManager.showNotification('An unexpected error occurred', 'error');
   }
 });
