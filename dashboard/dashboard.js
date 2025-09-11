@@ -66,6 +66,9 @@ function loadUserInfo() {
       } else {
         userNameElement.textContent = 'User';
       }
+    } else {
+      // If element not found, try to create account info section
+      createAccountInfoSection();
     }
     
     // Set user email
@@ -83,32 +86,101 @@ function loadUserInfo() {
         month: 'long',
         day: 'numeric'
       });
+    } else if (memberSinceElement) {
+      // If no login time, set current date
+      const currentDate = new Date();
+      memberSinceElement.textContent = currentDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
     }
     
     // Set subscription plan (simulate data)
     const subscriptionPlanElement = document.getElementById('subscriptionPlan');
     if (subscriptionPlanElement) {
-      // Simulate subscription data
-      const plans = ['Quarterly', 'Lifetime', 'Weekly'];
-      const randomPlan = plans[Math.floor(Math.random() * plans.length)];
-      subscriptionPlanElement.textContent = randomPlan;
+      // Simulate subscription data - use Quarterly by default for consistency
+      subscriptionPlanElement.textContent = 'Quarterly';
     }
     
     // Set billing cycle (simulate data)
     const billingCycleElement = document.getElementById('billingCycle');
     if (billingCycleElement) {
-      // Simulate billing data
-      const cycles = {
-        'Weekly': 'Weekly (Next payment: Sep 18, 2025)',
-        'Quarterly': 'Quarterly (Next payment: Dec 11, 2025)',
-        'Lifetime': 'One-time Payment'
-      };
-      
-      const subscriptionPlan = subscriptionPlanElement.textContent;
-      billingCycleElement.textContent = cycles[subscriptionPlan] || 'Not available';
+      // Set to quarterly cycle
+      billingCycleElement.textContent = 'Quarterly (Next payment: Dec 11, 2025)';
     }
   } catch (error) {
     console.error('Error loading user info:', error);
+    createAccountInfoSection();
+  }
+}
+
+// Create account information section if it doesn't exist
+function createAccountInfoSection() {
+  const accountPanel = document.querySelector('.account-panel .panel-content');
+  if (!accountPanel) return;
+  
+  // Check if account details exist
+  if (!document.querySelector('.account-details')) {
+    const accountDetails = document.createElement('div');
+    accountDetails.className = 'account-details';
+    
+    // Create account fields
+    const fields = [
+      { id: 'userName', label: 'Name', value: 'John Doe' },
+      { id: 'userEmail', label: 'Email', value: 'user@example.com' },
+      { id: 'memberSince', label: 'Member Since', value: 'September 11, 2025' },
+      { id: 'subscriptionPlan', label: 'Subscription Plan', value: 'Quarterly' },
+      { id: 'billingCycle', label: 'Billing Cycle', value: 'Quarterly (Next payment: Dec 11, 2025)' }
+    ];
+    
+    // Generate HTML for each field
+    fields.forEach(field => {
+      const fieldElement = document.createElement('div');
+      fieldElement.className = 'account-field';
+      
+      const labelElement = document.createElement('label');
+      labelElement.textContent = field.label;
+      
+      const valueElement = document.createElement('span');
+      valueElement.id = field.id;
+      valueElement.textContent = field.value;
+      
+      fieldElement.appendChild(labelElement);
+      fieldElement.appendChild(valueElement);
+      accountDetails.appendChild(fieldElement);
+    });
+    
+    // Create account actions
+    const actionsElement = document.createElement('div');
+    actionsElement.className = 'account-actions';
+    
+    const changePasswordBtn = document.createElement('button');
+    changePasswordBtn.className = 'btn-secondary';
+    changePasswordBtn.id = 'changePassword';
+    changePasswordBtn.textContent = 'Change Password';
+    
+    const updatePaymentBtn = document.createElement('button');
+    updatePaymentBtn.className = 'btn-secondary';
+    updatePaymentBtn.id = 'updatePayment';
+    updatePaymentBtn.textContent = 'Update Payment Method';
+    
+    actionsElement.appendChild(changePasswordBtn);
+    actionsElement.appendChild(updatePaymentBtn);
+    accountDetails.appendChild(actionsElement);
+    
+    // Add to panel
+    accountPanel.innerHTML = '';
+    accountPanel.appendChild(accountDetails);
+    
+    // Setup event listeners for new buttons
+    changePasswordBtn.addEventListener('click', function() {
+      showNotification('Password change feature coming soon!', 'info');
+    });
+    
+    updatePaymentBtn.addEventListener('click', function() {
+      showNotification('Payment method update feature coming soon!', 'info');
+    });
   }
 }
 
@@ -206,7 +278,19 @@ function loadProducts() {
 // Load licenses
 function loadLicenses() {
   const licensesList = document.getElementById('licensesList');
-  if (!licensesList) return;
+  if (!licensesList) {
+    console.log('License list element not found, creating container');
+    const licensePanel = document.querySelector('.license-panel .panel-content');
+    if (licensePanel) {
+      const newLicensesList = document.createElement('div');
+      newLicensesList.id = 'licensesList';
+      newLicensesList.className = 'licenses-list';
+      licensePanel.appendChild(newLicensesList);
+      licensesList = newLicensesList;
+    } else {
+      return;
+    }
+  }
   
   // Simulate license data
   const licenses = [
@@ -253,7 +337,19 @@ function loadLicenses() {
 // Load downloads
 function loadDownloads() {
   const downloadsList = document.getElementById('downloadsList');
-  if (!downloadsList) return;
+  if (!downloadsList) {
+    console.log('Downloads list element not found, creating container');
+    const downloadsPanel = document.querySelector('.downloads-panel .panel-content');
+    if (downloadsPanel) {
+      const newDownloadsList = document.createElement('div');
+      newDownloadsList.id = 'downloadsList';
+      newDownloadsList.className = 'downloads-list';
+      downloadsPanel.appendChild(newDownloadsList);
+      downloadsList = newDownloadsList;
+    } else {
+      return;
+    }
+  }
   
   // Simulate download data
   const downloads = [
@@ -379,6 +475,12 @@ function updateDashboardStats() {
   if (successRate) {
     // Simulate high detection safety
     successRate.textContent = '99.7%';
+  }
+  
+  // Update products count if not already set
+  const productsCount = document.getElementById('productsCount');
+  if (productsCount && productsCount.textContent === '0') {
+    productsCount.textContent = '3';
   }
 }
 
