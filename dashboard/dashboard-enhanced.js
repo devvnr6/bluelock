@@ -1,50 +1,5 @@
-// Dark mode functionality
-function initDarkModeToggle() {
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
-  
-  // Check for saved theme preference or use the system preference
-  const savedTheme = localStorage.getItem('bluelock-theme');
-  
-  if (savedTheme === 'dark' || (!savedTheme && prefersDarkScheme.matches)) {
-    document.body.classList.add('dark-mode');
-    updateDarkModeIcon(true);
-  } else {
-    document.body.classList.remove('dark-mode');
-    updateDarkModeIcon(false);
-  }
-  
-  // Set up the toggle
-  if (darkModeToggle) {
-    darkModeToggle.addEventListener('click', () => {
-      if (document.body.classList.contains('dark-mode')) {
-        document.body.classList.remove('dark-mode');
-        localStorage.setItem('bluelock-theme', 'light');
-        updateDarkModeIcon(false);
-        showNotification('Light mode enabled', 'info');
-      } else {
-        document.body.classList.add('dark-mode');
-        localStorage.setItem('bluelock-theme', 'dark');
-        updateDarkModeIcon(true);
-        showNotification('Dark mode enabled', 'info');
-      }
-    });
-  }
-}
-
-// Update dark mode toggle icon based on current theme
-function updateDarkModeIcon(isDarkMode) {
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  if (darkModeToggle) {
-    if (isDarkMode) {
-      darkModeToggle.innerHTML = '<i class="bx bx-sun"></i>';
-      darkModeToggle.setAttribute('data-tooltip', 'Switch to Light Mode');
-    } else {
-      darkModeToggle.innerHTML = '<i class="bx bx-moon"></i>';
-      darkModeToggle.setAttribute('data-tooltip', 'Switch to Dark Mode');
-    }
-  }
-}
+// This space intentionally left blank
+// Dark mode functionality has been removed
 
 // Update product and download items to use Boxicons
 function updateIconsToBoxicons() {
@@ -203,8 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setupEventListeners();
   updateDashboardStats();
   
-  // New enhancement functions
-  initDarkModeToggle();
+  // New enhancement functions (dark mode removed)
   updateIconsToBoxicons();
   initEventListeners();
   
