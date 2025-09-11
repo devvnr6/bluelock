@@ -216,9 +216,9 @@ class AuthManager {
 
       this.showNotification('Login successful!', 'success');
       
-      // Redirect to cheat page after a short delay
+      // Redirect to home page after a short delay
       setTimeout(() => {
-        this.redirectToCheat();
+        this.redirectToHome();
       }, 1500);
 
     } catch (error) {
@@ -417,9 +417,9 @@ class AuthManager {
     // Clean up URL
     this.cleanupOAuthState();
     
-    // Redirect to cheat page
+    // Redirect to home page
     setTimeout(() => {
-      this.redirectToCheat();
+      this.redirectToHome();
     }, 1500);
   }
 
@@ -512,12 +512,12 @@ class AuthManager {
     if (modal) {
       modal.style.display = 'none';
     }
-    this.redirectToCheat();
+    this.redirectToHome();
   }
 
-  redirectToCheat() {
+  redirectToHome() {
     try {
-      window.location.href = '../cheat/';
+      window.location.href = '../';
     } catch (error) {
       console.error('Redirect error:', error);
       this.showNotification('Redirect failed. Please navigate manually.', 'error');
@@ -531,8 +531,8 @@ class AuthManager {
       if (authData) {
         const parsed = JSON.parse(authData);
         if (parsed.isAuthenticated) {
-          // User is already logged in, redirect to cheat page
-          this.redirectToCheat();
+          // User is already logged in, redirect to home page
+          this.redirectToHome();
         }
       }
     } catch (error) {
@@ -681,9 +681,6 @@ if (document.readyState === 'loading') {
 window.addEventListener('error', (event) => {
   console.error('Global error:', event.error);
   if (authManager && authManager.isInitialized) {
-    authManager.showNotification('An unexpected error occurred', 'error');
-  }
-});
     authManager.showNotification('An unexpected error occurred', 'error');
   }
 });
