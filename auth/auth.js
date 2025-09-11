@@ -517,7 +517,7 @@ class AuthManager {
 
   redirectToHome() {
     try {
-      window.location.href = '../';
+      window.location.href = '../dashboard/';
     } catch (error) {
       console.error('Redirect error:', error);
       this.showNotification('Redirect failed. Please navigate manually.', 'error');
