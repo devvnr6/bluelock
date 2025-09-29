@@ -1,4 +1,3 @@
-// AuthManager class to handle authentication
 class AuthManager {
   constructor() {
     // You need to replace this with a REAL Discord Client ID from https://discord.com/developers/applications
@@ -683,4 +682,346 @@ window.addEventListener('error', (event) => {
   if (authManager && authManager.isInitialized) {
     authManager.showNotification('An unexpected error occurred', 'error');
   }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Elements
+  const loginForm = document.getElementById('loginForm');
+  const signupForm = document.getElementById('signupForm');
+  const loginCard = document.getElementById('loginCard');
+  const signupCard = document.getElementById('signupCard');
+  const showSignupLink = document.getElementById('showSignup');
+  const showLoginLink = document.getElementById('showLogin');
+  const passwordToggle = document.getElementById('passwordToggle');
+  const signupPasswordToggle = document.getElementById('signupPasswordToggle');
+  const passwordInput = document.getElementById('password');
+  const signupPasswordInput = document.getElementById('signupPassword');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  const strengthFill = document.getElementById('strengthFill');
+  const strengthLevel = document.getElementById('strengthLevel');
+  const successModal = document.getElementById('successModal');
+  const errorModal = document.getElementById('errorModal');
+  const closeModalBtn = document.getElementById('closeModal');
+  const closeErrorModalBtn = document.getElementById('closeErrorModal');
+  
+  // Password requirement elements
+  const reqLength = document.getElementById('reqLength');
+  const reqUppercase = document.getElementById('reqUppercase');
+  const reqLowercase = document.getElementById('reqLowercase');
+  const reqNumber = document.getElementById('reqNumber');
+  const reqSpecial = document.getElementById('reqSpecial');
+  
+  // Fix password toggle functionality
+  if (passwordToggle) {
+    passwordToggle.addEventListener('click', function() {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      
+      // Update icon based on visibility
+      updateToggleIcon(passwordToggle, type);
+    });
+  }
+  
+  if (signupPasswordToggle) {
+    signupPasswordToggle.addEventListener('click', function() {
+      const type = signupPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      signupPasswordInput.setAttribute('type', type);
+      
+      // Update icon based on visibility
+      updateToggleIcon(signupPasswordToggle, type);
+    });
+  }
+  
+  function updateToggleIcon(button, type) {
+    if (type === 'text') {
+      button.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+          <line x1="1" y1="1" x2="23" y2="23"></line>
+        </svg>
+      `;
+    } else {
+      button.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      `;
+    }
+  }
+
+  // Toggle between login and signup forms with animation
+  showSignupLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    loginCard.style.animation = 'fadeOut 0.4s forwards';
+    setTimeout(() => {
+      loginCard.style.display = 'none';
+      signupCard.style.display = 'block';
+      signupCard.style.animation = 'fadeIn 0.4s forwards';
+    }, 300);
+  });
+
+  showLoginLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    signupCard.style.animation = 'fadeOut 0.4s forwards';
+    setTimeout(() => {
+      signupCard.style.display = 'none';
+      loginCard.style.display = 'block';
+      loginCard.style.animation = 'fadeIn 0.4s forwards';
+    }, 300);
+  });
+
+  // Password strength meter
+  if (signupPasswordInput) {
+    signupPasswordInput.addEventListener('input', checkPasswordStrength);
+  }
+
+  function checkPasswordStrength() {
+    const password = signupPasswordInput.value;
+    let strength = 0;
+    
+    // Update visual requirements
+    const hasLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    updateRequirement(reqLength, hasLength);
+    updateRequirement(reqUppercase, hasUpperCase);
+    updateRequirement(reqLowercase, hasLowerCase);
+    updateRequirement(reqNumber, hasNumbers);
+    updateRequirement(reqSpecial, hasSpecialChars);
+    
+    // Calculate strength
+    if (hasLength) strength += 1;
+    if (hasUpperCase) strength += 1;
+    if (hasLowerCase) strength += 1;
+    if (hasNumbers) strength += 1;
+    if (hasSpecialChars) strength += 1;
+    
+    // Update strength meter
+    let percentage = (strength / 5) * 100;
+    let color, text;
+    
+    if (percentage <= 20) {
+      color = '#ff3b30';
+      text = 'Very Weak';
+    } else if (percentage <= 40) {
+      color = '#ff9500';
+      text = 'Weak';
+    } else if (percentage <= 60) {
+      color = '#ffcc00';
+      text = 'Medium';
+    } else if (percentage <= 80) {
+      color = '#34c759';
+      text = 'Strong';
+    } else {
+      color = '#30d158';
+      text = 'Very Strong';
+    }
+    
+    strengthFill.style.width = `${percentage}%`;
+    strengthFill.style.backgroundColor = color;
+    strengthLevel.textContent = text;
+    strengthLevel.style.color = color;
+  }
+
+  function updateRequirement(element, isValid) {
+    if (element) {
+      if (isValid) {
+        element.classList.add('valid');
+      } else {
+        element.classList.remove('valid');
+      }
+    }
+  }
+
+  // Form validation
+  if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Simple validation
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      if (!validateEmail(email)) {
+        showValidationError(document.getElementById('email'), 'Please enter a valid email');
+        return;
+      }
+      
+      if (password.length < 1) {
+        showValidationError(document.getElementById('password'), 'Password is required');
+        return;
+      }
+      
+      // Show loading state
+      showLoading('loginSpinner');
+      
+      // Simulate API call
+      setTimeout(() => {
+        // Hide loading state
+        hideLoading('loginSpinner');
+        
+        // For demo - would check login with backend in production
+        window.location.href = '../dashboard/';
+      }, 1500);
+    });
+  }
+
+  if (signupForm) {
+    signupForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get form values
+      const firstName = document.getElementById('firstName').value;
+      const lastName = document.getElementById('lastName').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const termsChecked = document.getElementById('terms').checked;
+      
+      // Validate fields
+      let isValid = true;
+      
+      if (firstName.length < 2) {
+        showValidationError(document.getElementById('firstName'), 'First name is required');
+        isValid = false;
+      }
+      
+      if (lastName.length < 2) {
+        showValidationError(document.getElementById('lastName'), 'Last name is required');
+        isValid = false;
+      }
+      
+      if (!validateEmail(email)) {
+        showValidationError(document.getElementById('signupEmail'), 'Please enter a valid email');
+        isValid = false;
+      }
+      
+      if (password.length < 8) {
+        showValidationError(document.getElementById('signupPassword'), 'Password must be at least 8 characters');
+        isValid = false;
+      }
+      
+      if (password !== confirmPassword) {
+        showValidationError(document.getElementById('confirmPassword'), 'Passwords do not match');
+        isValid = false;
+      }
+      
+      if (!termsChecked) {
+        document.getElementById('termsMessage').textContent = 'You must agree to the terms';
+        isValid = false;
+      }
+      
+      if (!isValid) return;
+      
+      // Show loading state
+      showLoading('signupSpinner');
+      
+      // Simulate API call
+      setTimeout(() => {
+        // Hide loading state
+        hideLoading('signupSpinner');
+        
+        // Show success modal
+        showSuccessModal();
+      }, 1500);
+    });
+  }
+  
+  // Helper functions
+  function validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
+  
+  function showValidationError(input, message) {
+    const parent = input.parentElement.parentElement;
+    const messageElement = parent.querySelector('.validation-message');
+    if (messageElement) {
+      messageElement.textContent = message;
+    }
+    input.classList.add('error');
+    
+    input.addEventListener('input', function clearError() {
+      if (messageElement) {
+        messageElement.textContent = '';
+      }
+      input.classList.remove('error');
+      input.removeEventListener('input', clearError);
+    });
+  }
+  
+  function showLoading(spinnerId) {
+    const spinner = document.getElementById(spinnerId);
+    if (spinner) {
+      spinner.parentElement.classList.add('loading');
+    }
+  }
+  
+  function hideLoading(spinnerId) {
+    const spinner = document.getElementById(spinnerId);
+    if (spinner) {
+      spinner.parentElement.classList.remove('loading');
+    }
+  }
+  
+  function showSuccessModal() {
+    if (successModal) {
+      successModal.style.display = 'flex';
+      successModal.classList.add('active');
+    }
+  }
+  
+  function showErrorModal(message) {
+    const errorMessage = document.getElementById('errorMessage');
+    if (errorMessage) {
+      errorMessage.textContent = message;
+    }
+    if (errorModal) {
+      errorModal.style.display = 'flex';
+      errorModal.classList.add('active');
+    }
+  }
+  
+  // Modal buttons
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', function() {
+      successModal.classList.remove('active');
+      setTimeout(() => {
+        successModal.style.display = 'none';
+        window.location.href = '../dashboard/';
+      }, 300);
+    });
+  }
+  
+  if (closeErrorModalBtn) {
+    closeErrorModalBtn.addEventListener('click', function() {
+      errorModal.classList.remove('active');
+      setTimeout(() => {
+        errorModal.style.display = 'none';
+      }, 300);
+    });
+  }
+  
+  // Form input validation styling
+  const formInputs = document.querySelectorAll('.form-input');
+  formInputs.forEach(input => {
+    input.addEventListener('blur', function() {
+      if (this.value) {
+        this.classList.add('filled');
+        
+        // For email validation
+        if (this.type === 'email' && validateEmail(this.value)) {
+          this.classList.add('valid');
+        } else if (this.type === 'email') {
+          this.classList.remove('valid');
+        }
+      } else {
+        this.classList.remove('filled');
+      }
+    });
+  });
 });
