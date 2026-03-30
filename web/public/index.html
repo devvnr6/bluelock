@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlueLock — Get Your Key</title>
+  <meta name="description" content="Generate your access key for BlueLock Script Hub" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Animated background -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
+
+  <!-- Floating particles -->
+  <div class="particles" id="particles"></div>
+
+  <main class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 2L28 9V23L16 30L4 23V9L16 2Z" stroke="url(#grad)" stroke-width="2" fill="none"/>
+            <path d="M16 8L22 11.5V18.5L16 22L10 18.5V11.5L16 8Z" fill="url(#grad)"/>
+            <defs>
+              <linearGradient id="grad" x1="0" y1="0" x2="32" y2="32">
+                <stop offset="0%" stop-color="#a855f7"/>
+                <stop offset="100%" stop-color="#6366f1"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="logo-text">BlueLock</span>
+      </div>
+      <nav class="nav-pills">
+        <span class="pill active">Get Key</span>
+        <span class="pill">Status</span>
+        <span class="pill">Discord</span>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        System Online
+      </div>
+      <h1>Access Your <span class="gradient-text">Script Hub</span></h1>
+      <p class="subtitle">Generate a unique access key to unlock the full BlueLock experience. Keys are valid for 24 hours.</p>
+    </section>
+
+    <!-- Key Card -->
+    <div class="key-card" id="keyCard">
+      <!-- Step 1: Generate -->
+      <div class="step" id="step1">
+        <div class="step-header">
+          <div class="step-number">1</div>
+          <div>
+            <h3>Generate Your Key</h3>
+            <p>Click below to create a unique access key</p>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="generateBtn" onclick="generateKey()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0110 0v4"/>
+          </svg>
+          Generate Key
+        </button>
+      </div>
+
+      <!-- Step 2: Copy Key -->
+      <div class="step hidden" id="step2">
+        <div class="step-header">
+          <div class="step-number success">✓</div>
+          <div>
+            <h3>Your Key is Ready</h3>
+            <p>Copy the key below and paste it in the script hub</p>
+          </div>
+        </div>
+        <div class="key-display" id="keyDisplay">
+          <code id="keyText">—</code>
+          <button class="btn-icon" onclick="copyKey()" title="Copy to clipboard" id="copyBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+            </svg>
+          </button>
+        </div>
+        <div class="key-meta">
+          <div class="meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12,6 12,12 16,14"/>
+            </svg>
+            <span>Expires in <strong id="expiryText">24 hours</strong></span>
+          </div>
+          <div class="meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+              <polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>
+            <span>Single use</span>
+          </div>
+        </div>
+        <button class="btn btn-secondary" onclick="generateKey()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23,4 23,10 17,10"/>
+            <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+          </svg>
+          Generate New Key
+        </button>
+      </div>
+
+      <!-- Loading State -->
+      <div class="step hidden" id="loadingStep">
+        <div class="loader">
+          <div class="loader-ring"></div>
+          <p>Generating key...</p>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div class="step hidden" id="errorStep">
+        <div class="error-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+          <p id="errorText">Something went wrong</p>
+          <button class="btn btn-primary" onclick="resetToStep1()">Try Again</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h4>Secure</h4>
+        <p>Server-side verification with HMAC signatures</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12,6 12,12 16,14"/>
+          </svg>
+        </div>
+        <h4>24h Access</h4>
+        <p>Keys are valid for a full 24-hour period</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/>
+          </svg>
+        </div>
+        <h4>Instant</h4>
+        <p>Keys are generated and verified instantly</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>© 2026 BlueLock — Script Hub Key System</p>
+    </footer>
+  </main>
+
+  <!-- Toast notification -->
+  <div class="toast hidden" id="toast">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+      <polyline points="22,4 12,14.01 9,11.01"/>
+    </svg>
+    <span id="toastText">Copied!</span>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
