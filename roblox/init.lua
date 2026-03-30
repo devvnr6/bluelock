@@ -17,10 +17,10 @@
 -- ═══════════════════════════════════════════════════════════
 local Config = {
     -- API endpoint for key verification
-    API_URL = "http://localhost:3000",  -- Change to your deployed URL
+    API_URL = "https://bluelock.lol",
     
     -- Website URL where users obtain keys
-    KEY_WEBSITE = "http://localhost:3000",  -- Change to your deployed URL
+    KEY_WEBSITE = "https://bluelock.lol",
     
     -- Hub info
     HUB_NAME = "BlueLock",
