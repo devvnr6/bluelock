@@ -17,10 +17,10 @@
 -- ═══════════════════════════════════════════════════════════
 local Config = {
     -- API endpoint for key verification
-    API_URL = "https://bluelock.lol",
+    API_URL = "https://bluelock-f9m3.onrender.com",
     
     -- Website URL where users obtain keys
-    KEY_WEBSITE = "https://bluelock.lol",
+    KEY_WEBSITE = "https://bluelock-f9m3.onrender.com",
     
     -- Hub info
     HUB_NAME = "BlueLock",
@@ -44,9 +44,9 @@ local Config = {
 -- ═══════════════════════════════════════════════════════════
 -- Load Modules
 -- ═══════════════════════════════════════════════════════════
-local KeyUI = loadstring(game:HttpGet("YOUR_RAW_URL/KeyUI.lua"))()
-local KeyVerifier = loadstring(game:HttpGet("YOUR_RAW_URL/KeyVerifier.lua"))()
-local ScriptHub = loadstring(game:HttpGet("YOUR_RAW_URL/ScriptHub.lua"))()
+local KeyUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/devvnr6/bluelock/main/roblox/KeyUI.lua"))()
+local KeyVerifier = loadstring(game:HttpGet("https://raw.githubusercontent.com/devvnr6/bluelock/main/roblox/KeyVerifier.lua"))()
+local ScriptHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/devvnr6/bluelock/main/roblox/ScriptHub.lua"))()
 
 -- Or if running locally / from file:
 -- local KeyUI = require(script.KeyUI)
