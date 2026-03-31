@@ -82,7 +82,7 @@ local function Initialize()
         local success, result = verifier:Verify(key)
         
         if success then
-            ui:ShowSuccess()
+            ui:ShowSuccess(result)
             verifier:SaveSessionKey(key)
             
             task.wait(1.5)

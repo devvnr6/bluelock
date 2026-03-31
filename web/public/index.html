@@ -40,7 +40,7 @@
       <nav class="nav-pills">
         <span class="pill active">Get Key</span>
         <span class="pill">Status</span>
-        <span class="pill">Discord</span>
+        <span class="pill" onclick="window.location.href='/admin'">Admin</span>
       </nav>
     </header>
 
@@ -62,8 +62,22 @@
           <div class="step-number">1</div>
           <div>
             <h3>Generate Your Key</h3>
-            <p>Click below to create a unique access key</p>
+            <p>Choose your key type and generate</p>
           </div>
+        </div>
+        <div class="key-type-selector" id="keyTypeSelector">
+          <button class="type-option active" data-type="daily" onclick="selectKeyType('daily')">
+            <span class="type-name">Daily</span>
+            <span class="type-duration">24 hours</span>
+          </button>
+          <button class="type-option" data-type="weekly" onclick="selectKeyType('weekly')">
+            <span class="type-name">Weekly</span>
+            <span class="type-duration">7 days</span>
+          </button>
+          <button class="type-option" data-type="monthly" onclick="selectKeyType('monthly')">
+            <span class="type-name">Monthly</span>
+            <span class="type-duration">30 days</span>
+          </button>
         </div>
         <button class="btn btn-primary" id="generateBtn" onclick="generateKey()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -99,6 +113,12 @@
               <polyline points="12,6 12,12 16,14"/>
             </svg>
             <span>Expires in <strong id="expiryText">24 hours</strong></span>
+          </div>
+          <div class="meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777z"/>
+            </svg>
+            <span>Type: <strong id="keyTypeText">Daily</strong></span>
           </div>
           <div class="meta-item">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

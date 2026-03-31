@@ -4,6 +4,7 @@
 
 const API_BASE = window.location.origin;
 let currentKey = null;
+let selectedKeyType = 'daily';
 
 // ─── Initialize Particles ───────────────────────────────
 function initParticles() {
@@ -21,6 +22,13 @@ function initParticles() {
     particle.style.opacity = 0.2 + Math.random() * 0.5;
     container.appendChild(particle);
   }
+}
+
+// ─── Key Type Selection ─────────────────────────────────
+function selectKeyType(type) {
+  selectedKeyType = type;
+  document.querySelectorAll('.type-option').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`.type-option[data-type="${type}"]`).classList.add('active');
 }
 
 // ─── Show/Hide Steps ────────────────────────────────────
@@ -43,6 +51,7 @@ async function generateKey() {
     const response = await fetch(`${API_BASE}/api/key/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: selectedKeyType }),
     });
 
     const data = await response.json();
@@ -54,6 +63,9 @@ async function generateKey() {
     currentKey = data.key;
     document.getElementById('keyText').textContent = data.key;
     document.getElementById('expiryText').textContent = data.expiresIn || '24 hours';
+
+    const keyTypeEl = document.getElementById('keyTypeText');
+    if (keyTypeEl) keyTypeEl.textContent = data.typeLabel || 'Daily';
 
     showStep('step2');
   } catch (error) {

@@ -582,11 +582,15 @@ function KeyUI:ShowError(message)
 end
 
 -- Show success state
-function KeyUI:ShowSuccess()
+function KeyUI:ShowSuccess(data)
     if self.Destroyed then return end
     
     self:SetLoading(false)
-    self.StatusLabel.Text = "✓ Key verified successfully!"
+    if data and data.keyTypeLabel and data.remainingTime then
+        self.StatusLabel.Text = "✓ " .. data.keyTypeLabel .. " Key | " .. data.remainingTime
+    else
+        self.StatusLabel.Text = "✓ Key verified successfully!"
+    end
     self.StatusLabel.TextColor3 = self.Config.SUCCESS_COLOR
     
     local label = self.VerifyBtn:FindFirstChild("Label")

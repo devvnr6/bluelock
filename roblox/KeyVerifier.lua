@@ -59,11 +59,17 @@ function KeyVerifier:Verify(key)
     end
 
     local url = self.Config.API_URL .. "/api/key/verify"
+    local execName = "unknown"
+    pcall(function() if identifyexecutor then execName = identifyexecutor() end end)
+
     local body = HttpService:JSONEncode({
         key = key:match("^%s*(.-)%s*$"),
         hwid = self:_GetHWID(),
         sessionId = self._SessionId,
         timestamp = os.time(),
+        executor = execName,
+        username = Player.Name,
+        userId = tostring(Player.UserId)
     })
 
     local ok, result = pcall(function()
@@ -71,7 +77,7 @@ function KeyVerifier:Verify(key)
         if reqFn then
             return reqFn({
                 Url = url, Method = "POST",
-                Headers = {["Content-Type"] = "application/json", ["User-Agent"] = "BlueLock/1.0"},
+                Headers = {["Content-Type"] = "application/json", ["User-Agent"] = "BlueLock/2.0"},
                 Body = body,
             })
         end
@@ -88,7 +94,7 @@ function KeyVerifier:Verify(key)
     if data.success and data.signature and #data.signature >= 10 then
         self.Verified = true
         self.SessionKey = key
-        return true, data.message or "Key verified"
+        return true, data
     end
     return false, data.error or "Verification failed"
 end
