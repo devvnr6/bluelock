@@ -278,6 +278,7 @@ function renderKeysTable(keys) {
       <td title="${k.boundHwids.join(', ')}" style="font-size:11px">${k.boundHwids.length > 0 ? truncate(k.boundHwids[0], 10) + (k.boundHwids.length > 1 ? ' +' + (k.boundHwids.length - 1) : '') : '—'}</td>
       <td>
         <div class="action-btns">
+          <button class="action-btn" onclick="showEditModal('${k.key}', ${k.maxUses}, ${k.currentUses})" title="Edit Uses">✎</button>
           <button class="action-btn extend" onclick="showExtendModal('${k.key}')" title="Extend">⏱</button>
           ${k.status === 'revoked'
             ? `<button class="action-btn" onclick="reactivateKey('${k.key}')" title="Reactivate">↩</button>`
@@ -336,6 +337,38 @@ async function extendKey() {
   closeModal('extendModal');
   showToast('Key extended');
   loadKeys();
+}
+
+function showEditModal(key, maxUses, currentUses) {
+  extendingKey = key; // Re-use the extendingKey variable as 'editingKey'
+  document.getElementById('editKeyDisplay').textContent = key;
+  document.getElementById('editMaxUses').value = maxUses;
+  document.getElementById('editCurrentUses').value = currentUses;
+  document.getElementById('editKeyModal').classList.remove('hidden');
+}
+
+async function saveKeyEdit() {
+  if (!extendingKey) return;
+  const maxUses = parseInt(document.getElementById('editMaxUses').value);
+  const currentUses = parseInt(document.getElementById('editCurrentUses').value);
+  
+  try {
+    const data = await apiFetch(`/api/admin/keys/${extendingKey}/edit`, {
+      method: 'POST',
+      body: { maxUses, currentUses },
+    });
+    
+    if (!data.success) {
+      showToast(data.error || 'Failed to edit key');
+      return;
+    }
+    
+    closeModal('editKeyModal');
+    showToast('Key updated');
+    loadKeys();
+  } catch (e) {
+    showToast('Failed to edit key');
+  }
 }
 
 // ─── Generate Keys ───────────────────────────────────────
@@ -464,7 +497,7 @@ function renderHwidsTable(hwids) {
       <td>${h.username || '—'}</td>
       <td>${h.executor || '—'}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:11px" title="${h.ips.join(', ')}">${h.ips.length > 0 ? truncate(h.ips[h.ips.length - 1], 14) + (h.ips.length > 1 ? ' +' + (h.ips.length - 1) : '') : '—'}</td>
-      <td>${h.keys.length}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px" title="${h.keys.join(', ')}">${h.keys.length > 0 ? truncate(h.keys[0], 12) + (h.keys.length > 1 ? ' +' + (h.keys.length - 1) : '') : '—'}</td>
       <td>${h.totalVerifications}</td>
       <td>${timeAgo(h.lastSeen)}</td>
       <td><span class="status-badge ${h.blacklisted ? 'blacklisted' : 'active'}">${h.blacklisted ? '🚫 Banned' : '✓ Active'}</span></td>

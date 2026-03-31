@@ -647,6 +647,28 @@ app.post('/api/admin/keys/:key/reactivate', adminAuth, (req, res) => {
   res.json({ success: true });
 });
 
+// ─── Edit Key Usage ───────────────────────────────────────
+app.post('/api/admin/keys/:key/edit', adminAuth, (req, res) => {
+  const key = req.params.key.trim().toUpperCase();
+  const entry = keyStore.get(key);
+  if (!entry) {
+    return res.status(404).json({ success: false, error: 'Key not found' });
+  }
+
+  const { maxUses, currentUses } = req.body;
+  
+  if (maxUses !== undefined) {
+    entry.maxUses = Math.max(1, parseInt(maxUses) || 1);
+  }
+  if (currentUses !== undefined) {
+    entry.currentUses = Math.max(0, parseInt(currentUses) || 0);
+  }
+
+  saveData();
+  console.log(`[ADMIN] Edited key ${key} usage (${entry.currentUses}/${entry.maxUses})`);
+  res.json({ success: true, maxUses: entry.maxUses, currentUses: entry.currentUses });
+});
+
 // ─── Extend Key ──────────────────────────────────────────
 app.post('/api/admin/keys/:key/extend', adminAuth, (req, res) => {
   const key = req.params.key.trim().toUpperCase();
