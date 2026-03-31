@@ -58,7 +58,7 @@ local ScriptHub = loadstring(game:HttpGet("https://raw.githubusercontent.com/dev
 -- ═══════════════════════════════════════════════════════════
 local function Initialize()
     -- Anti-tamper: Check environment
-    if not game or not game:GetService then
+    if not game or not game.GetService then
         return
     end
     
